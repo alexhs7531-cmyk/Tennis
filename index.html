@@ -1,0 +1,2332 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a1f16">
+  <title>Tennis Legends — The Eternal Tour</title>
+  <meta name="description" content="Your own tennis world: all-time legends, tournaments you control, records that build forever.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Archivo:wght@400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+/* ============================================================
+   TENNIS LEGENDS — Stylesheet
+   Centre-court evergreen, chalk lines, gold honours board.
+   Display: Fraunces · Body: Archivo · Scores: IBM Plex Mono
+   ============================================================ */
+:root {
+  --bg: #0a1f16;
+  --panel: #10291d;
+  --panel-2: #153525;
+  --line: rgba(239, 234, 216, 0.14);
+  --line-strong: rgba(239, 234, 216, 0.28);
+  --chalk: #efead8;
+  --muted: #9cb3a4;
+  --faint: #6d8578;
+  --gold: #c9a45c;
+  --gold-bright: #e9cd85;
+  --ball: #d9e650;
+  --ball-ink: #1d2405;
+  --clay: #c1633b;
+  --grass: #4e9a5e;
+  --hard: #3e7bb5;
+  --danger: #d66a5a;
+  --win: #86cc95;
+  --radius: 12px;
+  --nav-h: 62px;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Archivo", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  background:
+    radial-gradient(120% 70% at 50% -10%, #143324 0%, var(--bg) 55%),
+    var(--bg);
+  color: var(--chalk);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.45;
+  min-height: 100vh;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px) + 14px);
+}
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+input, select, textarea {
+  font: inherit; color: var(--chalk);
+  background: #0c2318;
+  border: 1px solid var(--line-strong);
+  border-radius: 8px;
+  padding: 9px 10px;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus, button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 16px) 55%, calc(100% - 11px) 55%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 28px; }
+::placeholder { color: var(--faint); }
+
+/* ---------- Header ---------- */
+.top {
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid var(--line);
+  display: flex; align-items: baseline; justify-content: space-between; gap: 10px;
+}
+.brand {
+  font-family: var(--font-display);
+  font-weight: 600; font-size: 21px; letter-spacing: 0.04em;
+}
+.brand em { color: var(--gold); font-style: normal; }
+.brand-sub { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--faint); }
+
+/* ---------- Views + nav ---------- */
+main { padding: 14px 14px 8px; max-width: 720px; margin: 0 auto; }
+.view { display: none; }
+.view.on { display: block; animation: rise 0.18s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .view.on, .sheet { animation: none !important; } }
+
+nav.tabs {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  display: flex;
+  background: rgba(9, 24, 17, 0.96);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid var(--line-strong);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  height: calc(var(--nav-h) + env(safe-area-inset-bottom, 0px));
+}
+nav.tabs button {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint);
+  padding-top: 8px;
+}
+nav.tabs button .ic { font-size: 18px; line-height: 1; }
+nav.tabs button.on { color: var(--gold-bright); }
+nav.tabs button.on .ic { transform: translateY(-1px); }
+
+/* ---------- Common bits ---------- */
+.h-display { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.02em; }
+.section-label {
+  font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold);
+  display: flex; align-items: center; gap: 10px; margin: 22px 0 10px;
+}
+.section-label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.card {
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.row { display: flex; align-items: center; gap: 10px; }
+.grow { flex: 1; min-width: 0; }
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+.small { font-size: 12.5px; }
+.tiny { font-size: 11px; }
+.mono { font-family: var(--font-mono); }
+.ellip { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mt { margin-top: 10px; }
+.center { text-align: center; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1px solid var(--line-strong); border-radius: 9px;
+  padding: 9px 14px; font-weight: 600; font-size: 14px;
+  background: var(--panel-2);
+}
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--ball); border-color: var(--ball); color: var(--ball-ink); }
+.btn.gold { background: transparent; border-color: var(--gold); color: var(--gold-bright); }
+.btn.danger { border-color: var(--danger); color: var(--danger); }
+.btn.wide { width: 100%; }
+.btn.sm { padding: 6px 10px; font-size: 12.5px; border-radius: 8px; }
+.btn[disabled] { opacity: 0.45; pointer-events: none; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+  border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px 9px;
+  color: var(--muted);
+}
+.chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+.dot.hard { background: var(--hard); } .dot.clay { background: var(--clay); } .dot.grass { background: var(--grass); }
+
+.ovr {
+  font-family: var(--font-mono); font-weight: 600; font-size: 13px;
+  border: 1px solid var(--line-strong); border-radius: 7px;
+  min-width: 34px; text-align: center; padding: 3px 4px;
+  color: var(--gold-bright);
+}
+.tag { font-size: 10px; letter-spacing: 0.1em; color: var(--faint); border: 1px solid var(--line); border-radius: 4px; padding: 1px 4px; }
+
+/* ---------- Tour: tournament cards ---------- */
+.t-card .name { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+.t-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+
+/* ---------- Round rail ---------- */
+.rail { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 10px; scrollbar-width: none; }
+.rail::-webkit-scrollbar { display: none; }
+.rail button {
+  flex: 0 0 auto; border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 6px 13px; font-size: 12.5px; letter-spacing: 0.06em; color: var(--muted);
+  font-family: var(--font-mono);
+}
+.rail button.on { background: var(--chalk); color: #14301f; border-color: var(--chalk); font-weight: 600; }
+.rail button.done { color: var(--gold); border-color: var(--gold); }
+
+/* ---------- Scoreboard match card (the signature) ---------- */
+.match {
+  background: linear-gradient(180deg, #143223, #102a1c);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+.match .m-head {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 6px 12px; font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--faint); border-bottom: 1px dashed var(--line);
+}
+.match .m-body { padding: 4px 12px 6px; }
+.m-row { display: flex; align-items: center; gap: 8px; padding: 7px 0; }
+.m-row + .m-row { border-top: 1px solid var(--line); }
+.m-row .seed { font-family: var(--font-mono); font-size: 11px; color: var(--faint); min-width: 20px; text-align: right; }
+.m-row .pname { font-weight: 600; font-size: 15px; }
+.m-row.winner .pname { color: var(--gold-bright); }
+.rk-in { font-family: var(--font-mono); font-size: 11px; color: var(--faint); font-weight: 400; }
+.m-row.loser { opacity: 0.62; }
+.setbox { display: flex; gap: 4px; }
+.setbox span {
+  font-family: var(--font-mono); font-size: 13px; min-width: 22px; text-align: center;
+  border: 1px solid var(--line); border-radius: 5px; padding: 2px 1px; color: var(--muted);
+}
+.setbox span.w { color: var(--chalk); border-color: var(--line-strong); background: rgba(239, 234, 216, 0.06); }
+.setbox sup { font-size: 9px; margin-left: 1px; }
+.m-foot { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px 10px; border-top: 1px dashed var(--line); }
+.badge-upset { font-size: 10px; letter-spacing: 0.14em; color: var(--danger); border: 1px solid var(--danger); border-radius: 4px; padding: 1px 6px; }
+.match.pending .m-foot { border-top: 0; padding-top: 2px; }
+
+/* ---------- Champion banner ---------- */
+.crown {
+  border: 1px solid var(--gold); border-radius: var(--radius);
+  background:
+    radial-gradient(90% 130% at 50% 0%, rgba(201, 164, 92, 0.18), transparent 60%),
+    linear-gradient(180deg, var(--panel-2), var(--panel));
+  text-align: center; padding: 24px 16px; margin-bottom: 12px;
+}
+.crown .who { font-family: var(--font-display); font-size: 28px; color: var(--gold-bright); margin: 6px 0 2px; }
+.crown .lbl { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+
+/* ---------- Players list ---------- */
+.p-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); margin-bottom: 8px;
+}
+.p-row .rk { font-family: var(--font-mono); font-size: 12px; color: var(--faint); min-width: 30px; }
+.p-row .nm { font-weight: 600; }
+.p-row .sub { font-size: 11.5px; color: var(--faint); }
+
+.toolbar { display: flex; gap: 8px; margin-bottom: 12px; }
+.toolbar input { flex: 1; }
+.toolbar select { width: auto; flex: 0 0 auto; max-width: 46%; }
+
+/* ---------- Rankings ---------- */
+.rank-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-bottom: 1px solid var(--line);
+}
+.rank-row .pos { font-family: var(--font-display); font-weight: 600; font-size: 17px; min-width: 34px; color: var(--gold-bright); }
+.rank-row:first-child .pos { font-size: 21px; }
+.mv { font-family: var(--font-mono); font-size: 11px; min-width: 34px; text-align: right; }
+.mv.up { color: var(--win); } .mv.down { color: var(--danger); } .mv.same { color: var(--faint); }
+.seg { display: flex; border: 1px solid var(--line-strong); border-radius: 9px; overflow: hidden; margin-bottom: 12px; }
+.seg button { flex: 1; padding: 8px; font-size: 13px; color: var(--muted); }
+.seg button.on { background: var(--chalk); color: #14301f; font-weight: 600; }
+
+/* ---------- Records ---------- */
+.lead-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 560px) { .lead-grid { grid-template-columns: 1fr 1fr; } }
+.lead .t { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+.lead ol { list-style: none; }
+.lead li { display: flex; align-items: baseline; gap: 8px; padding: 4px 0; border-bottom: 1px dashed var(--line); }
+.lead li:last-child { border-bottom: 0; }
+.lead .n { font-family: var(--font-mono); color: var(--faint); font-size: 11px; min-width: 14px; }
+.lead .v { margin-left: auto; font-family: var(--font-mono); color: var(--gold-bright); }
+
+.wall { border: 1px solid var(--gold); border-radius: var(--radius); padding: 14px; background: linear-gradient(180deg, rgba(201, 164, 92, 0.08), transparent 40%), var(--panel); }
+.wall-row { display: flex; align-items: baseline; gap: 10px; padding: 7px 0; border-bottom: 1px solid var(--line); }
+.wall-row:last-child { border-bottom: 0; }
+.wall-row .ed { font-family: var(--font-mono); font-size: 11px; color: var(--faint); min-width: 74px; }
+.wall-row .ch { font-family: var(--font-display); font-weight: 600; color: var(--gold-bright); }
+
+/* ---------- Modals (bottom sheets) ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 60; display: none;
+  background: rgba(4, 12, 8, 0.66); backdrop-filter: blur(3px);
+  align-items: flex-end; justify-content: center;
+}
+.overlay.on { display: flex; }
+.sheet {
+  background: var(--bg);
+  border: 1px solid var(--line-strong); border-bottom: 0;
+  border-radius: 18px 18px 0 0;
+  width: 100%; max-width: 720px; max-height: 88vh; max-height: 88dvh;
+  overflow-y: auto; padding: 8px 16px calc(22px + env(safe-area-inset-bottom, 0px));
+  animation: sheetUp 0.22s ease-out;
+}
+@keyframes sheetUp { from { transform: translateY(30px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+.sheet .grab { width: 42px; height: 4px; border-radius: 4px; background: var(--line-strong); margin: 6px auto 12px; }
+.sheet h2 { font-family: var(--font-display); font-weight: 600; font-size: 20px; margin-bottom: 4px; }
+.sheet-close { position: sticky; top: 0; float: right; font-size: 20px; color: var(--faint); padding: 2px 8px; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+.form-grid .full { grid-column: 1 / -1; }
+label.f { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--faint); margin-bottom: 4px; }
+.attr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+.attr-grid .a { display: flex; align-items: center; gap: 8px; }
+.attr-grid .a label { flex: 1; font-size: 12px; color: var(--muted); }
+.attr-grid .a input { width: 58px; text-align: center; padding: 6px 4px; font-family: var(--font-mono); }
+details.grp { border: 1px solid var(--line); border-radius: 10px; margin-bottom: 8px; overflow: hidden; }
+details.grp summary {
+  list-style: none; cursor: pointer; padding: 10px 12px;
+  font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold);
+  display: flex; justify-content: space-between;
+}
+details.grp summary::-webkit-details-marker { display: none; }
+details.grp summary::after { content: "+"; color: var(--faint); }
+details.grp[open] summary::after { content: "–"; }
+details.grp .inner { padding: 4px 12px 12px; }
+
+/* attribute bars on profile */
+.bar { display: flex; align-items: center; gap: 8px; padding: 3px 0; }
+.bar .lb { flex: 1; font-size: 12px; color: var(--muted); }
+.bar .tr { flex: 1.2; height: 5px; background: rgba(239, 234, 216, 0.09); border-radius: 4px; overflow: hidden; }
+.bar .fl { height: 100%; background: var(--gold); border-radius: 4px; }
+.bar .vl { font-family: var(--font-mono); font-size: 12px; min-width: 24px; text-align: right; color: var(--chalk); }
+
+.statline { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px dashed var(--line); font-size: 13.5px; }
+.statline:last-child { border-bottom: 0; }
+.statline .v { font-family: var(--font-mono); color: var(--gold-bright); }
+
+.hero-num { font-family: var(--font-display); font-size: 30px; font-weight: 600; color: var(--gold-bright); line-height: 1.1; }
+.hero-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; margin: 12px 0; }
+.hero-grid .cell { border: 1px solid var(--line); border-radius: 10px; padding: 10px 4px; }
+.hero-grid .k { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--faint); margin-top: 3px; }
+
+/* ---------- Toast ---------- */
+#toast {
+  position: fixed; left: 50%; bottom: calc(var(--nav-h) + 18px); transform: translateX(-50%) translateY(20px);
+  background: var(--chalk); color: #14301f; font-weight: 600; font-size: 13.5px;
+  border-radius: 999px; padding: 9px 18px; opacity: 0; pointer-events: none;
+  transition: all 0.25s ease; z-index: 80; max-width: 88vw; text-align: center;
+}
+#toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+.empty { text-align: center; padding: 40px 18px; color: var(--muted); }
+.empty .big { font-family: var(--font-display); font-size: 22px; color: var(--chalk); margin-bottom: 6px; }
+
+hr.rule { border: 0; border-top: 1px solid var(--line); margin: 14px 0; }
+
+</style>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='42' fill='%23d9e650'/><path d='M20 20 Q50 50 20 80 M80 20 Q50 50 80 80' stroke='%230a1f16' stroke-width='6' fill='none'/></svg>">
+</head>
+<body>
+
+  <header class="top">
+    <div>
+      <div class="brand">Tennis <em>Legends</em></div>
+      <div class="brand-sub">The eternal tour</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="view on" id="view-tour"></section>
+    <section class="view" id="view-players"></section>
+    <section class="view" id="view-rankings"></section>
+    <section class="view" id="view-records"></section>
+    <section class="view" id="view-more"></section>
+  </main>
+
+  <nav class="tabs">
+    <button data-view="tour"><span class="ic">🎾</span>Tour</button>
+    <button data-view="players"><span class="ic">👤</span>Players</button>
+    <button data-view="rankings"><span class="ic">📊</span>Rankings</button>
+    <button data-view="records"><span class="ic">🏆</span>Records</button>
+    <button data-view="more"><span class="ic">⋯</span>More</button>
+  </nav>
+
+  <div class="overlay" id="overlay">
+    <div class="sheet" id="sheet"></div>
+  </div>
+
+  <div id="toast"></div>
+
+<script>
+/* ============================================================
+   TENNIS LEGENDS — Match Engine
+   Point-by-point simulation. DOM-free (runs in browser + node).
+   Calibrated so that (best of 5, neutral surfaces):
+     Prime Djokovic (98) beats Prime Kafelnikov (91) ~84%
+     Prime Nadal   (98) beats Prime Haas       (90) ~87%
+   ============================================================ */
+(function (global) {
+  'use strict';
+
+  /* ---------- Tuning constants (set by Monte Carlo calibration) ---------- */
+  const T = {
+    BASE_SERVE: 0.615,      // point-win chance for server between equal players
+    PT_SCALE: 0.0016,       // probability shift per rating-point of advantage
+    SURF_W: 0.70,           // weight of surface-affinity difference (a 20-pt surface gap swings a match heavily)
+    OVR_W: 1.2,             // weight of the Overall Ability gap (scout's judgement)
+    MNT_W: 0.10,            // constant mental influence
+    BIG_W: 0.60,            // big-point (break/set/match point) influence
+    TB_W: 0.28,             // tie-break skill influence inside tie-breaks
+    FORM_BASE: 1.0,         // per-match form sigma floor (rating points)
+    FORM_PER: 0.08,         // extra sigma per point below 99 Consistency Over Tournament
+    FORM_DOWN: 0.14,        // inconsistent players play below their sheet more often
+    MOM_GAIN: 0.35,         // momentum gained per game won
+    MOM_DECAY: 0.86,        // momentum decay per game
+    MOM_CAP: 1.4,           // momentum cap (rating points)
+    MOM_W: 0.55,            // momentum influence
+    FATIGUE_W: 0.85,        // fatigue influence per accumulated unit
+    DECIDER_FATIGUE: 1.30,  // fatigue multiplier in the deciding set
+    DECIDER_MNT: 0.15,      // extra mental weight in the deciding set
+    INJ_PER_SET: 0.6,       // scales in-match knock probability (cubic in fragility)
+    GRASS_SERVE: 0.020,     // faster surface: serve worth more
+    CLAY_SERVE: -0.018,     // slower surface: serve worth less
+    HARD_SERVE: 0.004
+  };
+
+  /* ---------- Attribute schema ---------- */
+  const ATTR_DEFS = [
+    ['forehand', 'Forehand'], ['backhand', 'Backhand'], ['serve', 'Serve'],
+    ['firstServe', 'First Serve Accuracy'], ['returnServe', 'Return of Serve'],
+    ['volley', 'Volley'], ['smash', 'Smash'], ['slice', 'Slice'],
+    ['passing', 'Passing Shots'], ['consistency', 'Groundstroke Consistency'],
+    ['power', 'Power'], ['depth', 'Depth of Shot'], ['angle', 'Angle Creation'],
+    ['defense', 'Defensive Skills'], ['coverage', 'Court Coverage'],
+    ['footwork', 'Footwork'], ['speed', 'Speed'], ['acceleration', 'Acceleration'],
+    ['agility', 'Agility'], ['balance', 'Balance'], ['flexibility', 'Flexibility'],
+    ['endurance', 'Endurance'], ['recovery', 'Recovery Between Points'],
+    ['mental', 'Mental Toughness'], ['composure', 'Composure'],
+    ['concentration', 'Concentration'], ['spirit', 'Competitive Spirit'],
+    ['tactical', 'Tactical Intelligence'], ['adaptability', 'Match Adaptability'],
+    ['shotSelection', 'Shot Selection'], ['anticipation', 'Anticipation'],
+    ['bigPoint', 'Big Point Performance'], ['tiebreak', 'Tie-break Ability'],
+    ['clutchServe', 'Clutch Serving'], ['clutchReturn', 'Clutch Returning'],
+    ['tournamentConsistency', 'Consistency Over Tournament'],
+    ['injuryResistance', 'Injury Resistance']
+  ];
+  const ATTR_GROUPS = {
+    'Technique': ['forehand', 'backhand', 'serve', 'firstServe', 'returnServe', 'volley', 'smash', 'slice', 'passing', 'consistency'],
+    'Ball Striking': ['power', 'depth', 'angle', 'shotSelection'],
+    'Defence & Movement': ['defense', 'coverage', 'footwork', 'speed', 'acceleration', 'agility', 'balance', 'flexibility'],
+    'Physical': ['endurance', 'recovery', 'injuryResistance'],
+    'Mental': ['mental', 'composure', 'concentration', 'spirit', 'bigPoint', 'tiebreak', 'clutchServe', 'clutchReturn', 'tournamentConsistency'],
+    'Tactical': ['tactical', 'adaptability', 'anticipation']
+  };
+  const SURFACES = ['hard', 'clay', 'grass'];
+
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+  /* ---------- Composite ratings ---------- */
+  function derive(p) {
+    const a = p.attrs;
+    const SRV = 0.42 * a.serve + 0.24 * a.firstServe + 0.20 * a.power + 0.14 * a.depth;
+    const RET = 0.48 * a.returnServe + 0.22 * a.anticipation + 0.16 * a.passing + 0.14 * a.agility;
+    const GRD = 0.14 * a.forehand + 0.14 * a.backhand + 0.14 * a.consistency +
+      0.08 * a.depth + 0.08 * a.angle + 0.08 * a.power + 0.08 * a.shotSelection +
+      0.04 * a.slice + 0.07 * a.tactical + 0.06 * a.anticipation +
+      0.05 * a.volley + 0.04 * a.smash;
+    const MOV = 0.20 * a.defense + 0.18 * a.coverage + 0.14 * a.speed +
+      0.13 * a.footwork + 0.11 * a.agility + 0.08 * a.acceleration +
+      0.07 * a.balance + 0.05 * a.flexibility + 0.04 * a.anticipation;
+    const MNT = 0.26 * a.mental + 0.22 * a.composure + 0.20 * a.concentration +
+      0.16 * a.spirit + 0.16 * a.adaptability;
+    const PHY = 0.55 * a.endurance + 0.33 * a.recovery + 0.12 * a.flexibility;
+    const BIG_S = 0.65 * a.bigPoint + 0.35 * a.clutchServe;
+    const BIG_R = 0.65 * a.bigPoint + 0.35 * a.clutchReturn;
+    return { SRV, RET, GRD, MOV, MNT, PHY, BIG_S, BIG_R, TB: a.tiebreak };
+  }
+
+  function gaussian(rng) {
+    let u = 0, v = 0;
+    while (u === 0) u = rng();
+    while (v === 0) v = rng();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+  }
+
+  /* ---------- Point probability ----------
+     ctx: { bigPoint, tiebreak, decider }
+     side objects: { d(derived), form, mom, fatigue, injury, surf } */
+  function pointProb(server, returner, surface, ctx) {
+    const s = server, r = returner;
+    let base = T.BASE_SERVE +
+      (surface === 'grass' ? T.GRASS_SERVE : surface === 'clay' ? T.CLAY_SERVE : T.HARD_SERVE);
+
+    const srvSide = 0.52 * s.d.SRV + 0.30 * s.d.GRD + 0.18 * s.d.MOV;
+    const retSide = 0.40 * r.d.RET + 0.34 * r.d.GRD + 0.26 * r.d.MOV;
+
+    let diff = srvSide - retSide;
+    diff += (s.ovr - r.ovr) * T.OVR_W;
+    diff += (s.d.MNT - r.d.MNT) * T.MNT_W;
+    diff += (s.surf - r.surf) * T.SURF_W;
+    diff += (s.form - r.form);
+    diff += (s.mom - r.mom) * T.MOM_W;
+    diff -= (s.fatigue - r.fatigue) * T.FATIGUE_W * (ctx.decider ? T.DECIDER_FATIGUE : 1);
+    diff -= (s.injury - r.injury);
+
+    if (ctx.decider) diff += (s.d.MNT - r.d.MNT) * T.DECIDER_MNT;
+    if (ctx.tiebreak) diff += (s.d.TB - r.d.TB) * T.TB_W;
+    if (ctx.bigPoint) diff += (s.d.BIG_S - r.d.BIG_R) * T.BIG_W;
+
+    return clamp(base + diff * T.PT_SCALE, 0.05, 0.95);
+  }
+
+  function aceChance(server, returner, surface) {
+    const retQ = 0.6 * returner.player.attrs.returnServe + 0.4 * returner.player.attrs.anticipation;
+    let p = 0.05 + (server.d.SRV - retQ) * 0.005 +
+      (server.player.attrs.serve + server.player.attrs.power - 176) * 0.0022;
+    if (surface === 'grass') p += 0.03;
+    if (surface === 'clay') p -= 0.02;
+    return clamp(p, 0.02, 0.30);
+  }
+
+  /* ---------- Match simulation ----------
+     playerA / playerB: { id?, name, attrs:{...}, surfaces:{hard,clay,grass} }
+     opts: { bestOf: 3|5, surface: 'hard'|'clay'|'grass', rng } */
+  function simulateMatch(playerA, playerB, opts) {
+    const bestOf = opts.bestOf === 3 ? 3 : 5;
+    const surface = SURFACES.includes(opts.surface) ? opts.surface : 'hard';
+    const rng = opts.rng || Math.random;
+    const setsToWin = (bestOf + 1) / 2;
+
+    const mk = (player) => {
+      const d = derive(player);
+      const tc = player.attrs.tournamentConsistency;
+      const sigma = T.FORM_BASE + (99 - tc) * T.FORM_PER;
+      return {
+        player, d,
+        ovr: player.overall || Math.round((d.SRV + d.RET + d.GRD + d.MOV + d.MNT) / 5),
+        form: clamp(gaussian(rng) * sigma, -3 * sigma, 3 * sigma) - (99 - tc) * T.FORM_DOWN,
+        mom: 0, fatigue: 0, injury: 0,
+        surf: (player.surfaces && player.surfaces[surface]) || 80,
+        fatigueRate: Math.max(0.08, 1 - d.PHY / 140)
+      };
+    };
+    const P = [mk(playerA), mk(playerB)];
+    const stats = [
+      { pts: 0, svcPts: 0, svcWon: 0, aces: 0, bpFaced: 0, bpSaved: 0, breaks: 0 },
+      { pts: 0, svcPts: 0, svcWon: 0, aces: 0, bpFaced: 0, bpSaved: 0, breaks: 0 }
+    ];
+    const events = [];
+    const sets = [];
+    const setWins = [0, 0];
+    let server = rng() < 0.5 ? 0 : 1;
+    let totalPoints = 0, totalGames = 0;
+
+    const playPoint = (srv, ctx) => {
+      const rcv = 1 - srv;
+      const p = pointProb(P[srv], P[rcv], surface, ctx);
+      totalPoints++;
+      const srvWins = rng() < p;
+      stats[srv].svcPts++;
+      if (srvWins) {
+        stats[srv].svcWon++;
+        stats[srv].pts++;
+        if (rng() < aceChance(P[srv], P[rcv], surface)) stats[srv].aces++;
+      } else {
+        stats[rcv].pts++;
+      }
+      return srvWins ? srv : rcv;
+    };
+
+    const playGame = (srv, games, decider) => {
+      const rcv = 1 - srv;
+      const sc = [0, 0]; // 0,1,2,3 = 0/15/30/40, then advantage handling
+      for (;;) {
+        const srvGamePt = sc[srv] >= 3 && sc[srv] >= sc[rcv] + 1;
+        const rcvBreakPt = sc[rcv] >= 3 && sc[rcv] >= sc[srv] + 1;
+        const big = srvGamePt || rcvBreakPt;
+        if (rcvBreakPt) stats[srv].bpFaced++; // server faces a break point
+        const w = playPoint(srv, { bigPoint: big, tiebreak: false, decider });
+        if (rcvBreakPt && w === srv) stats[srv].bpSaved++;
+        sc[w]++;
+        if (sc[w] >= 4 && sc[w] >= sc[1 - w] + 2) {
+          if (w === rcv) stats[rcv].breaks++;
+          return w;
+        }
+        if (sc[0] === 4 && sc[1] === 4) { sc[0] = 3; sc[1] = 3; } // deuce reset
+      }
+    };
+
+    const playTiebreak = (firstSrv, target, decider, matchOnLine) => {
+      const sc = [0, 0];
+      let srv = firstSrv, played = 0;
+      for (;;) {
+        const setPt = sc[0] >= target - 1 || sc[1] >= target - 1;
+        const w = playPoint(srv, {
+          bigPoint: setPt, tiebreak: true, decider
+        });
+        sc[w]++;
+        played++;
+        if (sc[w] >= target && sc[w] >= sc[1 - w] + 2) return { winner: w, score: sc.slice() };
+        if (played % 2 === 1) srv = 1 - srv; // serve change after 1st point, then every 2
+      }
+    };
+
+    while (setWins[0] < setsToWin && setWins[1] < setsToWin) {
+      const decider = (setWins[0] === setsToWin - 1 && setWins[1] === setsToWin - 1);
+      const games = [0, 0];
+      let tb = null;
+      for (;;) {
+        if (games[0] === 6 && games[1] === 6) {
+          const target = decider ? 10 : 7;
+          tb = playTiebreak(server, target, decider, decider);
+          games[tb.winner]++;
+          server = 1 - server; // next set: alternation continues after TB
+          break;
+        }
+        const w = playGame(server, games, decider);
+        games[w]++;
+        totalGames++;
+        // momentum
+        P[w].mom = clamp(P[w].mom * T.MOM_DECAY + T.MOM_GAIN, -T.MOM_CAP, T.MOM_CAP);
+        P[1 - w].mom = clamp(P[1 - w].mom * T.MOM_DECAY - T.MOM_GAIN * 0.6, -T.MOM_CAP, T.MOM_CAP);
+        server = 1 - server;
+        if (games[w] >= 6 && games[w] >= games[1 - w] + 2) break;
+      }
+      const setWinner = games[0] > games[1] ? 0 : 1;
+      setWins[setWinner]++;
+      sets.push({ games: games.slice(), tb: tb ? tb.score : null });
+
+      // fatigue accrues with set length
+      const load = (games[0] + games[1]) / 10;
+      P.forEach(pl => { pl.fatigue += load * pl.fatigueRate; });
+
+      // possible knock (in-match only, no lasting effect)
+      if (setWins[0] < setsToWin && setWins[1] < setsToWin) {
+        P.forEach((pl, i) => {
+          const ir = pl.player.attrs.injuryResistance;
+          const chance = Math.pow((99 - ir) / 99, 3) * T.INJ_PER_SET;
+          if (pl.injury === 0 && rng() < chance) {
+            pl.injury = 2 + rng() * 4;
+            events.push({ type: 'injury', player: i, afterSet: sets.length });
+          }
+        });
+      }
+    }
+
+    const winner = setWins[0] > setWins[1] ? 0 : 1;
+    const scoreStr = sets.map(s => {
+      const g = winner === 0 ? [s.games[0], s.games[1]] : [s.games[1], s.games[0]];
+      let str = g[0] + '-' + g[1];
+      if (s.tb) str += '(' + Math.min(s.tb[0], s.tb[1]) + ')';
+      return str;
+    }).join(' ');
+
+    const paceMin = surface === 'clay' ? 0.80 : surface === 'grass' ? 0.62 : 0.71;
+    const minutes = Math.round(totalPoints * paceMin + sets.length * 4);
+
+    return {
+      winner, sets, setWins: setWins.slice(), scoreStr, stats, events,
+      surface, bestOf, totalPoints, minutes,
+      decider: sets.length === bestOf,
+      hadTiebreak: sets.some(s => s.tb)
+    };
+  }
+
+  const Engine = { T, ATTR_DEFS, ATTR_GROUPS, SURFACES, derive, simulateMatch, clamp };
+  global.TennisEngine = Engine;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ============================================================
+   TENNIS LEGENDS — Data layer
+   State, persistence, players, Elo, head-to-heads, career stats.
+   DOM-free (runs in browser + node).
+   ============================================================ */
+(function (global) {
+  'use strict';
+  const E = global.TennisEngine;
+  const SAVE_KEY = 'tennisLegendsSave';
+  const BACKUP_KEY = 'tennisLegendsSave_backup';
+
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
+
+  function newState() {
+    return {
+      version: 1,
+      seq: 0,
+      nextPlayerId: 1,
+      nextDefId: 1,
+      nextInstanceId: 1,
+      nextMatchId: 1,
+      players: {},
+      defs: {},
+      matches: [],
+      completed: [],
+      h2h: {},
+      active: null,
+      rankings: [],
+      prevRankPos: {},
+      settings: { window: 20 }
+    };
+  }
+
+  /* ---------- Persistence ---------- */
+  function hasStorage() {
+    try { return typeof localStorage !== 'undefined' && localStorage !== null; }
+    catch (e) { return false; }
+  }
+
+  function save(state) {
+    if (!hasStorage()) return { ok: true, bytes: 0 };
+    try {
+      const json = JSON.stringify(state);
+      localStorage.setItem(SAVE_KEY, json);
+      return { ok: true, bytes: json.length };
+    } catch (e) {
+      return { ok: false, error: e && e.message };
+    }
+  }
+
+  function load() {
+    if (!hasStorage()) return newState();
+    try {
+      const json = localStorage.getItem(SAVE_KEY);
+      if (!json) return newState();
+      const state = migrate(JSON.parse(json));
+      try { localStorage.setItem(BACKUP_KEY, json); } catch (e) { /* backup best-effort */ }
+      return state;
+    } catch (e) {
+      try {
+        const backup = localStorage.getItem(BACKUP_KEY);
+        if (backup) return migrate(JSON.parse(backup));
+      } catch (e2) { /* fall through */ }
+      return newState();
+    }
+  }
+
+  function migrate(state) {
+    const base = newState();
+    for (const k of Object.keys(base)) if (!(k in state)) state[k] = base[k];
+    if (!state.settings) state.settings = { window: 20 };
+    if (typeof state.settings.window !== 'number') state.settings.window = 20;
+    return state;
+  }
+
+  function exportJSON(state) { return JSON.stringify(state, null, 1); }
+
+  function importJSON(text) {
+    const obj = JSON.parse(text);
+    if (!obj || typeof obj !== 'object' || !obj.players || !('seq' in obj)) {
+      throw new Error('Not a Tennis Legends save file');
+    }
+    return migrate(obj);
+  }
+
+  function storageBytes(state) { return JSON.stringify(state).length; }
+
+  /* ---------- Players ---------- */
+  function blankAttrs(fill) {
+    const attrs = {};
+    for (const [key] of E.ATTR_DEFS) attrs[key] = fill;
+    return attrs;
+  }
+
+  // Accepts { name, country?, overall, attrs?{...}, surfaces?{hard,clay,grass} }
+  // Missing attributes default to overall; missing surfaces default to 80.
+  function normalisePlayer(input) {
+    if (!input || !input.name || String(input.name).trim() === '') throw new Error('Player needs a name');
+    const overall = clamp(Number(input.overall) || 70, 1, 99);
+    const attrs = blankAttrs(overall);
+    if (input.attrs && typeof input.attrs === 'object') {
+      for (const [key] of E.ATTR_DEFS) {
+        if (input.attrs[key] !== undefined && input.attrs[key] !== null && input.attrs[key] !== '') {
+          attrs[key] = clamp(Number(input.attrs[key]), 1, 99);
+        }
+      }
+    }
+    const surfaces = { hard: 80, clay: 80, grass: 80 };
+    if (input.surfaces && typeof input.surfaces === 'object') {
+      for (const s of E.SURFACES) {
+        if (input.surfaces[s] !== undefined && input.surfaces[s] !== null && input.surfaces[s] !== '') {
+          surfaces[s] = clamp(Number(input.surfaces[s]), 1, 99);
+        }
+      }
+    }
+    return {
+      name: String(input.name).trim().slice(0, 40),
+      country: input.country ? String(input.country).trim().toUpperCase().slice(0, 3) : '',
+      overall, attrs, surfaces
+    };
+  }
+
+  function freshCareer() {
+    return {
+      active: true,
+      elo: 1500, peakElo: 1500,
+      w: 0, l: 0,
+      surf: { hard: [0, 0], clay: [0, 0], grass: [0, 0] },
+      titles: 0, finals: 0,
+      titlesByDef: {}, finalsByDef: {},
+      rank: null, bestRank: null, no1: 0,
+      streak: 0, bestStreak: 0,
+      tb: [0, 0], dec: [0, 0], vsTop10: [0, 0]
+    };
+  }
+
+  function addPlayer(state, input) {
+    const core = normalisePlayer(input);
+    const p = Object.assign({ id: state.nextPlayerId++ }, core, freshCareer());
+    state.players[p.id] = p;
+    return p;
+  }
+
+  function updatePlayer(state, id, input) {
+    const p = state.players[id];
+    if (!p) throw new Error('No such player');
+    const core = normalisePlayer(Object.assign({ name: p.name }, input));
+    p.name = core.name;
+    p.country = core.country !== '' ? core.country : p.country;
+    p.overall = core.overall;
+    p.attrs = core.attrs;
+    p.surfaces = core.surfaces;
+    return p;
+  }
+
+  function importPlayers(state, text) {
+    let data = JSON.parse(text);
+    if (!Array.isArray(data)) data = [data];
+    const added = [];
+    for (const item of data) added.push(addPlayer(state, item));
+    return added;
+  }
+
+  function playerHasHistory(state, id) {
+    return state.matches.some(m => m.a === id || m.b === id);
+  }
+
+  function deletePlayer(state, id) {
+    if (state.active) throw new Error('Finish or cancel the active tournament first');
+    if (playerHasHistory(state, id)) throw new Error('This player has match history — retire them instead');
+    delete state.players[id];
+  }
+
+  /* ---------- Elo ---------- */
+  function eloExpected(ra, rb) { return 1 / (1 + Math.pow(10, (rb - ra) / 400)); }
+
+  function eloK(pointsBase) {
+    return Math.max(12, Math.min(40, Math.round(10 + pointsBase / 80)));
+  }
+
+  /* ---------- Head-to-head ---------- */
+  function h2hKey(a, b) { return a < b ? a + '_' + b : b + '_' + a; }
+
+  function h2hGet(state, a, b) {
+    const rec = state.h2h[h2hKey(a, b)] || [0, 0];
+    return a < b ? { aWins: rec[0], bWins: rec[1] } : { aWins: rec[1], bWins: rec[0] };
+  }
+
+  function h2hAdd(state, winner, loser) {
+    const key = h2hKey(winner, loser);
+    if (!state.h2h[key]) state.h2h[key] = [0, 0];
+    state.h2h[key][winner < loser ? 0 : 1]++;
+  }
+
+  /* ---------- Applying a main-draw result ---------- */
+  function applyMatchResult(state, instance, roundIdx, roundName, pA, pB, result) {
+    const winner = result.winner === 0 ? pA : pB;
+    const loser = result.winner === 0 ? pB : pA;
+
+    // Elo
+    const K = eloK(instance.pointsBase);
+    const exp = eloExpected(winner.elo, loser.elo);
+    const delta = Math.round(K * (1 - exp));
+    const upset = winner.elo < loser.elo - 20;
+    winner.elo += delta;
+    loser.elo -= delta;
+    if (winner.elo > winner.peakElo) winner.peakElo = winner.elo;
+
+    // W/L + surface
+    winner.w++; loser.l++;
+    const sf = instance.surface;
+    winner.surf[sf][0]++; loser.surf[sf][1]++;
+
+    // Streaks
+    winner.streak++; if (winner.streak > winner.bestStreak) winner.bestStreak = winner.streak;
+    loser.streak = 0;
+
+    // Tie-break sets & deciding sets
+    for (const s of result.sets) {
+      if (s.tb) {
+        const setWinner = s.games[0] > s.games[1] ? 0 : 1;
+        const wp = setWinner === result.winner ? winner : loser;
+        const lp = setWinner === result.winner ? loser : winner;
+        wp.tb[0]++; lp.tb[1]++;
+      }
+    }
+    if (result.decider) { winner.dec[0]++; loser.dec[1]++; }
+
+    // vs top 10 (by current ranking at time of match)
+    if (loser.rank && loser.rank <= 10) winner.vsTop10[0]++;
+    if (winner.rank && winner.rank <= 10) loser.vsTop10[1]++;
+
+    // H2H + match log
+    h2hAdd(state, winner.id, loser.id);
+    const rec = {
+      i: state.nextMatchId++,
+      t: instance.id, rd: roundIdx, rn: roundName,
+      a: pA.id, b: pB.id, w: winner.id,
+      s: result.scoreStr, sf, m: result.minutes,
+      up: upset ? 1 : 0, d: delta,
+      st: [
+        result.stats[0].aces, result.stats[1].aces,
+        result.stats[0].breaks, result.stats[1].breaks,
+        result.stats[0].pts, result.stats[1].pts
+      ]
+    };
+    if (result.events && result.events.length) {
+      rec.inj = result.events.map(ev => (ev.player === 0 ? pA.id : pB.id) + ':' + ev.afterSet);
+    }
+    state.matches.push(rec);
+    return { winner, loser, delta, upset, rec };
+  }
+
+  const Data = {
+    SAVE_KEY, BACKUP_KEY,
+    newState, save, load, exportJSON, importJSON, storageBytes,
+    normalisePlayer, addPlayer, updatePlayer, importPlayers,
+    playerHasHistory, deletePlayer,
+    eloExpected, eloK, h2hGet, h2hAdd, applyMatchResult, blankAttrs
+  };
+  global.TennisData = Data;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ============================================================
+   TENNIS LEGENDS — Tournament layer
+   Entry lists (direct / qualifying / wildcards), seeded draws,
+   byes, bracket progression, ranking points, finalisation.
+   DOM-free (runs in browser + node).
+   ============================================================ */
+(function (global) {
+  'use strict';
+  const E = global.TennisEngine;
+  const D = global.TennisData;
+
+  // Points for reaching a stage, as a share of the champion's points.
+  // Index = rounds short of the title: 0 champion, 1 finalist, 2 SF, ...
+  const POINT_LADDER = [1, 0.6, 0.36, 0.18, 0.09, 0.045, 0.0225, 0.005];
+
+  const ROUND_LABELS = { 128: 'R128', 64: 'R64', 32: 'R32', 16: 'R16', 8: 'QF', 4: 'SF', 2: 'F' };
+
+  function roundName(playersInRound) { return ROUND_LABELS[playersInRound] || ('R' + playersInRound); }
+
+  /* ---------- Tournament definitions ---------- */
+  function defaultSlots(drawSize) {
+    const map = {
+      128: { quali: 16, wild: 8 },
+      64: { quali: 8, wild: 4 },
+      32: { quali: 4, wild: 2 },
+      16: { quali: 2, wild: 1 },
+      8: { quali: 0, wild: 1 },
+      4: { quali: 0, wild: 0 }
+    };
+    return map[drawSize] || { quali: 0, wild: 0 };
+  }
+
+  function createDef(state, input) {
+    const drawSize = [4, 8, 16, 32, 64, 128].includes(Number(input.drawSize)) ? Number(input.drawSize) : 32;
+    const slots = defaultSlots(drawSize);
+    const quali = input.quali === undefined ? slots.quali : Math.max(0, Math.min(drawSize / 4, Math.round(Number(input.quali) || 0)));
+    const wild = input.wild === undefined ? slots.wild : Math.max(0, Math.min(drawSize / 4, Math.round(Number(input.wild) || 0)));
+    const def = {
+      id: state.nextDefId++,
+      name: String(input.name || 'Untitled Open').trim().slice(0, 40),
+      surface: E.SURFACES.includes(input.surface) ? input.surface : 'hard',
+      drawSize,
+      bestOf: Number(input.bestOf) === 5 ? 5 : 3,
+      points: Math.max(50, Math.min(4000, Math.round(Number(input.points) || 500))),
+      quali, wild,
+      editions: 0
+    };
+    state.defs[def.id] = def;
+    return def;
+  }
+
+  function updateDef(state, id, input) {
+    const def = state.defs[id];
+    if (!def) throw new Error('No such tournament');
+    const fresh = createDef({ nextDefId: 0, defs: {} }, input);
+    def.name = fresh.name; def.surface = fresh.surface; def.drawSize = fresh.drawSize;
+    def.bestOf = fresh.bestOf; def.points = fresh.points;
+    def.quali = fresh.quali; def.wild = fresh.wild;
+    return def;
+  }
+
+  function deleteDef(state, id) {
+    if (state.active && state.active.defId === id) throw new Error('This tournament is currently running');
+    delete state.defs[id];
+  }
+
+  /* ---------- Entry list ---------- */
+  function entryOrder(state) {
+    // Ranking points, then Elo, then overall — the pecking order for entries and seedings.
+    const pts = currentPointsMap(state);
+    return Object.values(state.players)
+      .filter(p => p.active)
+      .sort((a, b) =>
+        (pts[b.id] || 0) - (pts[a.id] || 0) ||
+        b.elo - a.elo ||
+        b.overall - a.overall ||
+        a.id - b.id);
+  }
+
+  function shuffle(arr, rng) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(rng() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  // Backend qualifying: everyone outside direct entry gets a path in.
+  // Snake-seeded knockout pods, one qualifier per pod. Matches are not recorded.
+  function runQualifying(state, pool, spots, def, rng) {
+    if (spots <= 0 || pool.length === 0) return { qualifiers: [], rounds: 0 };
+    if (pool.length <= spots) return { qualifiers: pool.slice(), rounds: 0 };
+    const pods = Array.from({ length: spots }, () => []);
+    pool.forEach((p, i) => {
+      const row = Math.floor(i / spots);
+      const col = row % 2 === 0 ? i % spots : spots - 1 - (i % spots);
+      pods[col].push(p);
+    });
+    const qualifiers = [];
+    let maxRounds = 0;
+    for (const pod of pods) {
+      let alive = pod.slice();
+      let rounds = 0;
+      while (alive.length > 1) {
+        rounds++;
+        const next = [];
+        // pair best v worst within the pod; odd player out gets a bye
+        let lo = 0, hi = alive.length - 1;
+        while (lo < hi) {
+          const r = E.simulateMatch(alive[lo], alive[hi], { bestOf: 3, surface: def.surface, rng });
+          next.push(r.winner === 0 ? alive[lo] : alive[hi]);
+          lo++; hi--;
+        }
+        if (lo === hi) next.push(alive[lo]);
+        alive = next;
+      }
+      qualifiers.push(alive[0]);
+      maxRounds = Math.max(maxRounds, rounds);
+    }
+    return { qualifiers, rounds: maxRounds };
+  }
+
+  // Wildcards: weighted random from the leftovers — the better you are, the better your odds.
+  function pickWildcards(pool, count, rng) {
+    const picks = [];
+    const remaining = pool.slice();
+    while (picks.length < count && remaining.length > 0) {
+      const weights = remaining.map(p => Math.pow(Math.max(1, p.overall - 40), 3));
+      const total = weights.reduce((s, w) => s + w, 0);
+      let roll = rng() * total;
+      let idx = 0;
+      while (roll > weights[idx] && idx < remaining.length - 1) { roll -= weights[idx]; idx++; }
+      picks.push(remaining.splice(idx, 1)[0]);
+    }
+    return picks;
+  }
+
+  /* ---------- Seeded draw with byes ----------
+     Canonical slot numbering: slot i carries canonical number order[i];
+     canonical k pairs with canonical N+1-k in round one. Seeds within
+     real-tennis bands (3-4, 5-8, 9-16, 17-32) are shuffled, byes sit
+     opposite the top seeds, everyone else lands at random. */
+  function canonicalOrder(n) {
+    let order = [1];
+    while (order.length < n) {
+      const m = order.length * 2 + 1;
+      const next = [];
+      for (const x of order) { next.push(x, m - x); }
+      order = next;
+    }
+    return order;
+  }
+
+  function buildDraw(entrants, seedCount, byeCount, rng) {
+    const N = entrants.length + byeCount;
+    const order = canonicalOrder(N);
+    const bySlotCanon = order; // slot index -> canonical number
+
+    // canonical number -> participant
+    const canonMap = new Array(N + 1).fill(null);
+    // seed bands: [1],[2],[3-4],[5-8],[9-16],[17-32]
+    const bands = [[1, 1], [2, 2], [3, 4], [5, 8], [9, 16], [17, 32]];
+    let assigned = 0;
+    for (const [lo, hi] of bands) {
+      if (assigned >= seedCount) break;
+      const bandSeeds = [];
+      for (let s = lo; s <= Math.min(hi, seedCount); s++) bandSeeds.push(s);
+      const canonSlots = bandSeeds.slice();
+      shuffle(canonSlots, rng);
+      bandSeeds.forEach((seedNo, i) => { canonMap[canonSlots[i]] = entrants[seedNo - 1]; });
+      assigned += bandSeeds.length;
+    }
+    // byes opposite the best seeds: canonical N, N-1, ...
+    for (let i = 0; i < byeCount; i++) canonMap[N - i] = 'BYE';
+    // everyone else at random into the remaining canonical numbers
+    const rest = entrants.slice(seedCount);
+    shuffle(rest, rng);
+    let ri = 0;
+    for (let c = 1; c <= N; c++) if (canonMap[c] === null) canonMap[c] = rest[ri++];
+
+    const slots = bySlotCanon.map(c => canonMap[c]);
+    const seedOf = {};
+    for (let s = 1; s <= seedCount; s++) seedOf[entrants[s - 1].id] = s;
+    return { slots, seedOf, size: N };
+  }
+
+  /* ---------- Starting a tournament ---------- */
+  function startTournament(state, defId, rng) {
+    rng = rng || Math.random;
+    if (state.active) throw new Error('Finish or cancel the active tournament first');
+    const def = state.defs[defId];
+    if (!def) throw new Error('No such tournament');
+    const order = entryOrder(state);
+    if (order.length < 2) throw new Error('You need at least 2 active players');
+
+    // Shrink the bracket if the player pool is small.
+    let size = def.drawSize;
+    while (size > 4 && order.length <= size / 2) size = size / 2;
+
+    let directList, qualifiers = [], wildcards = [], qualiRounds = 0;
+    if (order.length <= size) {
+      directList = order.slice();
+    } else {
+      const quali = Math.min(def.quali, size - 2);
+      const wild = Math.min(def.wild, size - quali - 2);
+      const direct = size - quali - wild;
+      directList = order.slice(0, direct);
+      const outside = order.slice(direct);
+      const q = runQualifying(state, outside, quali, def, rng);
+      qualifiers = q.qualifiers; qualiRounds = q.rounds;
+      const qualifiedIds = new Set(qualifiers.map(p => p.id));
+      const leftovers = outside.filter(p => !qualifiedIds.has(p.id));
+      wildcards = pickWildcards(leftovers, wild, rng);
+    }
+
+    const entrants = directList.concat(qualifiers, wildcards);
+    // Seeding order = entry-ranking order among entrants
+    const rankIndex = new Map(order.map((p, i) => [p.id, i]));
+    entrants.sort((a, b) => rankIndex.get(a.id) - rankIndex.get(b.id));
+
+    const seedCount = Math.min(Math.max(2, size / 4), 32, entrants.length);
+    const byeCount = size - entrants.length;
+    const draw = buildDraw(entrants, seedCount, byeCount, rng);
+
+    const totalRounds = Math.log2(size);
+    const rounds = [];
+    const first = [];
+    for (let i = 0; i < size; i += 2) {
+      first.push({ a: idOf(draw.slots[i]), b: idOf(draw.slots[i + 1]), w: null, s: null });
+    }
+    rounds.push(first);
+    for (let r = 1; r < totalRounds; r++) {
+      rounds.push(Array.from({ length: size / Math.pow(2, r + 1) }, () => ({ a: null, b: null, w: null, s: null })));
+    }
+
+    def.editions++;
+    const instance = {
+      id: state.nextInstanceId++,
+      defId: def.id,
+      name: def.name,
+      edition: def.editions,
+      surface: def.surface,
+      bestOf: def.bestOf,
+      pointsBase: def.points,
+      size,
+      seeds: draw.seedOf,
+      tags: buildTags(qualifiers, wildcards),
+      qualiRounds,
+      rounds,
+      roundNames: Array.from({ length: totalRounds }, (_, r) => roundName(size / Math.pow(2, r)))
+    };
+    state.active = instance;
+    resolveByes(state, instance);
+    return instance;
+  }
+
+  function idOf(slot) { return slot === 'BYE' ? 'BYE' : slot.id; }
+
+  function buildTags(qualifiers, wildcards) {
+    const tags = {};
+    for (const p of qualifiers) tags[p.id] = 'Q';
+    for (const p of wildcards) tags[p.id] = 'WC';
+    return tags;
+  }
+
+  function resolveByes(state, inst) {
+    const first = inst.rounds[0];
+    first.forEach((m, i) => {
+      if (m.b === 'BYE' && m.w === null) { m.w = m.a; m.s = 'bye'; advance(inst, 0, i); }
+      else if (m.a === 'BYE' && m.w === null) { m.w = m.b; m.s = 'bye'; advance(inst, 0, i); }
+    });
+  }
+
+  function advance(inst, roundIdx, matchIdx) {
+    const m = inst.rounds[roundIdx][matchIdx];
+    if (roundIdx + 1 >= inst.rounds.length) return;
+    const target = inst.rounds[roundIdx + 1][Math.floor(matchIdx / 2)];
+    if (matchIdx % 2 === 0) target.a = m.w; else target.b = m.w;
+  }
+
+  function currentRoundIdx(inst) {
+    for (let r = 0; r < inst.rounds.length; r++) {
+      if (inst.rounds[r].some(m => m.w === null)) return r;
+    }
+    return inst.rounds.length; // finished
+  }
+
+  function isFinished(inst) { return currentRoundIdx(inst) >= inst.rounds.length; }
+
+  /* ---------- Playing a match ---------- */
+  function playMatch(state, roundIdx, matchIdx, rng) {
+    const inst = state.active;
+    if (!inst) throw new Error('No tournament running');
+    const m = inst.rounds[roundIdx][matchIdx];
+    if (!m || m.w !== null) throw new Error('Match already decided');
+    if (m.a === null || m.b === null) throw new Error('Waiting on earlier results');
+    const pA = state.players[m.a], pB = state.players[m.b];
+    const result = E.simulateMatch(pA, pB, { bestOf: inst.bestOf, surface: inst.surface, rng: rng || Math.random });
+    m.w = result.winner === 0 ? pA.id : pB.id;
+    m.s = result.scoreStr;
+    const applied = D.applyMatchResult(state, inst, roundIdx, inst.roundNames[roundIdx], pA, pB, result);
+    m.mid = applied.rec.i;
+    advance(inst, roundIdx, matchIdx);
+    return { result, applied, finished: isFinished(inst) };
+  }
+
+  /* ---------- Points + finalisation ---------- */
+  function pointsForExit(pointsBase, roundsShortOfTitle) {
+    const factor = POINT_LADDER[Math.min(roundsShortOfTitle, POINT_LADDER.length - 1)];
+    return Math.max(5, Math.round(pointsBase * factor));
+  }
+
+  function finalizeTournament(state) {
+    const inst = state.active;
+    if (!inst || !isFinished(inst)) throw new Error('Tournament is not finished');
+    const totalRounds = inst.rounds.length;
+    const finalMatch = inst.rounds[totalRounds - 1][0];
+    const champId = finalMatch.w;
+    const runnerUpId = finalMatch.a === champId ? finalMatch.b : finalMatch.a;
+
+    // Everyone's exit round -> points
+    const points = {};
+    for (let r = 0; r < totalRounds; r++) {
+      for (const m of inst.rounds[r]) {
+        if (m.s === 'bye') continue;
+        const loser = m.a === m.w ? m.b : m.a;
+        if (loser !== 'BYE' && loser !== null) points[loser] = pointsForExit(inst.pointsBase, totalRounds - r);
+      }
+    }
+    points[champId] = pointsForExit(inst.pointsBase, 0);
+
+    const champ = state.players[champId];
+    const runnerUp = state.players[runnerUpId];
+    champ.titles++;
+    champ.titlesByDef[inst.defId] = (champ.titlesByDef[inst.defId] || 0) + 1;
+    champ.finals++;
+    champ.finalsByDef[inst.defId] = (champ.finalsByDef[inst.defId] || 0) + 1;
+    runnerUp.finals++;
+    runnerUp.finalsByDef[inst.defId] = (runnerUp.finalsByDef[inst.defId] || 0) + 1;
+
+    state.seq++;
+    state.completed.push({
+      id: inst.id, defId: inst.defId, n: inst.edition, seq: state.seq,
+      name: inst.name, surface: inst.surface, pointsBase: inst.pointsBase, size: inst.size,
+      champ: champId, runnerUp: runnerUpId, finalScore: finalMatch.s,
+      points
+    });
+    state.active = null;
+    recomputeRankings(state);
+    return { champ, runnerUp, finalScore: finalMatch.s };
+  }
+
+  function cancelTournament(state) {
+    // Results already played stay on record; the event just never crowns a champion.
+    state.active = null;
+  }
+
+  /* ---------- Rankings ---------- */
+  function currentPointsMap(state) {
+    const windowSize = state.settings.window;
+    const events = windowSize > 0 ? state.completed.slice(-windowSize) : state.completed;
+    const pts = {};
+    for (const ev of events) {
+      for (const [pid, p] of Object.entries(ev.points)) {
+        pts[pid] = (pts[pid] || 0) + p;
+      }
+    }
+    return pts;
+  }
+
+  function recomputeRankings(state) {
+    const pts = currentPointsMap(state);
+    state.prevRankPos = {};
+    for (const row of state.rankings) state.prevRankPos[row.id] = row.rank;
+
+    const rows = Object.values(state.players)
+      .map(p => ({ id: p.id, pts: pts[p.id] || 0, elo: p.elo }))
+      .filter(r => r.pts > 0)
+      .sort((a, b) => b.pts - a.pts || b.elo - a.elo || a.id - b.id);
+
+    rows.forEach((r, i) => { r.rank = i + 1; });
+    state.rankings = rows;
+
+    // write current + best rank onto players
+    for (const p of Object.values(state.players)) p.rank = null;
+    for (const r of rows) {
+      const p = state.players[r.id];
+      p.rank = r.rank;
+      if (p.bestRank === null || r.rank < p.bestRank) p.bestRank = r.rank;
+    }
+    if (rows.length > 0) state.players[rows[0].id].no1++;
+    return rows;
+  }
+
+  const Tournament = {
+    POINT_LADDER, roundName, defaultSlots,
+    createDef, updateDef, deleteDef,
+    entryOrder, startTournament, playMatch,
+    currentRoundIdx, isFinished, finalizeTournament, cancelTournament,
+    currentPointsMap, recomputeRankings, pointsForExit
+  };
+  global.TennisTournament = Tournament;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ============================================================
+   TENNIS LEGENDS — Records layer
+   Leader boards, career summaries, head-to-heads, champions wall.
+   DOM-free (runs in browser + node).
+   ============================================================ */
+(function (global) {
+  'use strict';
+  const D = global.TennisData;
+
+  const pct = (w, l) => (w + l === 0 ? 0 : (100 * w) / (w + l));
+
+  function playersArr(state) { return Object.values(state.players); }
+
+  function leaders(state, minMatches) {
+    const min = minMatches === undefined ? 20 : minMatches;
+    const all = playersArr(state);
+    const played = all.filter(p => p.w + p.l > 0);
+    const top = (arr, key, n) => arr.slice().sort((a, b) => key(b) - key(a) || b.w - a.w || a.id - b.id).slice(0, n || 10).filter(p => key(p) > 0);
+    return {
+      titles: top(all, p => p.titles),
+      finals: top(all, p => p.finals),
+      wins: top(played, p => p.w),
+      winPct: played.filter(p => p.w + p.l >= min)
+        .sort((a, b) => pct(b.w, b.l) - pct(a.w, a.l) || b.w - a.w).slice(0, 10),
+      peakElo: top(played, p => p.peakElo),
+      bestStreak: top(played, p => p.bestStreak),
+      no1: top(all, p => p.no1),
+      vsTop10: top(played, p => p.vsTop10[0])
+    };
+  }
+
+  function titlesByTournament(state) {
+    // For each tournament definition: who has won it most.
+    const out = [];
+    for (const def of Object.values(state.defs)) {
+      const holders = playersArr(state)
+        .filter(p => (p.titlesByDef[def.id] || 0) > 0)
+        .sort((a, b) => (b.titlesByDef[def.id] || 0) - (a.titlesByDef[def.id] || 0))
+        .slice(0, 3)
+        .map(p => ({ player: p, count: p.titlesByDef[def.id] }));
+      if (holders.length) out.push({ def, holders });
+    }
+    return out.sort((a, b) => b.def.points - a.def.points);
+  }
+
+  function bigTitles(state, threshold) {
+    // Titles at events worth >= threshold points ("majors").
+    const th = threshold || 1500;
+    const counts = {};
+    for (const ev of state.completed) {
+      if (ev.pointsBase >= th) counts[ev.champ] = (counts[ev.champ] || 0) + 1;
+    }
+    return Object.entries(counts)
+      .map(([pid, c]) => ({ player: state.players[pid], count: c }))
+      .filter(r => r.player)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+  }
+
+  function career(state, pid) {
+    const p = state.players[pid];
+    if (!p) return null;
+    const matches = state.matches.filter(m => m.a === pid || m.b === pid);
+    const titlesList = state.completed.filter(ev => ev.champ === pid);
+    const finalsLost = state.completed.filter(ev => ev.runnerUp === pid);
+    return {
+      player: p,
+      w: p.w, l: p.l, winPct: pct(p.w, p.l),
+      surf: p.surf, tb: p.tb, dec: p.dec, vsTop10: p.vsTop10,
+      matches: matches.slice(-500).reverse(),
+      totalMatches: matches.length,
+      titlesList: titlesList.reverse(),
+      finalsLost: finalsLost.reverse()
+    };
+  }
+
+  function h2hDetail(state, aId, bId) {
+    const rec = D.h2hGet(state, aId, bId);
+    const matches = state.matches.filter(m =>
+      (m.a === aId && m.b === bId) || (m.a === bId && m.b === aId)).reverse();
+    return { rec, matches };
+  }
+
+  function championsWall(state) { return state.completed.slice().reverse(); }
+
+  function opponentsFaced(state, pid) {
+    const seen = new Map();
+    for (const m of state.matches) {
+      if (m.a === pid) seen.set(m.b, true);
+      else if (m.b === pid) seen.set(m.a, true);
+    }
+    return [...seen.keys()].map(id => state.players[id]).filter(Boolean);
+  }
+
+  const Records = { pct, leaders, titlesByTournament, bigTitles, career, h2hDetail, championsWall, opponentsFaced };
+  global.TennisRecords = Records;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ============================================================
+   TENNIS LEGENDS — UI layer
+   Rendering for all views + bottom-sheet modals.
+   ============================================================ */
+(function (global) {
+  'use strict';
+  const E = global.TennisEngine;
+  const D = global.TennisData;
+  const T = global.TennisTournament;
+  const R = global.TennisRecords;
+
+  const $ = sel => document.querySelector(sel);
+
+  const esc = s => String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+  const fmt = n => Number(n || 0).toLocaleString('en-GB');
+  const pct1 = (w, l) => (w + l === 0 ? '–' : ((100 * w) / (w + l)).toFixed(1) + '%');
+
+  const SURF_NAME = { hard: 'Hard', clay: 'Clay', grass: 'Grass' };
+  const surfChip = s => `<span class="chip"><span class="dot ${s}"></span>${SURF_NAME[s]}</span>`;
+
+  /* Country flags: full ISO alpha-3 + IOC/tennis codes -> ISO alpha-2 -> emoji.
+     Also accepts 2-letter codes directly, plus ENG / SCO / WAL. */
+  const COUNTRY_A2 = {"ABW":"AW","AFG":"AF","AGO":"AO","AIA":"AI","ALA":"AX","ALB":"AL","ALG":"DZ","AND":"AD","ANG":"AO","ANT":"AG","ARE":"AE","ARG":"AR","ARM":"AM","ARU":"AW","ASA":"AS","ASM":"AS","ATA":"AQ","ATF":"TF","ATG":"AG","AUS":"AU","AUT":"AT","AZE":"AZ","BAH":"BS","BAN":"BD","BAR":"BB","BDI":"BI","BEL":"BE","BEN":"BJ","BER":"BM","BES":"BQ","BFA":"BF","BGD":"BD","BGR":"BG","BHR":"BH","BHS":"BS","BHU":"BT","BIH":"BA","BIZ":"BZ","BLM":"BL","BLR":"BY","BLZ":"BZ","BMU":"BM","BOL":"BO","BOT":"BW","BRA":"BR","BRB":"BB","BRN":"BH","BRU":"BN","BTN":"BT","BUL":"BG","BUR":"BF","BVT":"BV","BWA":"BW","CAF":"CF","CAM":"KH","CAN":"CA","CAY":"KY","CCK":"CC","CGO":"CG","CHA":"TD","CHE":"CH","CHI":"CL","CHL":"CL","CHN":"CN","CIV":"CI","CMR":"CM","COD":"CD","COG":"CG","COK":"CK","COL":"CO","COM":"KM","CPV":"CV","CRC":"CR","CRI":"CR","CRO":"HR","CUB":"CU","CUW":"CW","CXR":"CX","CYM":"KY","CYP":"CY","CZE":"CZ","DEN":"DK","DEU":"DE","DJI":"DJ","DMA":"DM","DNK":"DK","DOM":"DO","DZA":"DZ","ECU":"EC","EGY":"EG","ERI":"ER","ESA":"SV","ESH":"EH","ESP":"ES","EST":"EE","ETH":"ET","FIJ":"FJ","FIN":"FI","FJI":"FJ","FLK":"FK","FRA":"FR","FRO":"FO","FSM":"FM","GAB":"GA","GAM":"GM","GBR":"GB","GBS":"GW","GEO":"GE","GEQ":"GQ","GER":"DE","GGY":"GG","GHA":"GH","GIB":"GI","GIN":"GN","GLP":"GP","GMB":"GM","GNB":"GW","GNQ":"GQ","GRC":"GR","GRD":"GD","GRE":"GR","GRL":"GL","GRN":"GD","GTM":"GT","GUA":"GT","GUF":"GF","GUI":"GN","GUM":"GU","GUY":"GY","HAI":"HT","HKG":"HK","HMD":"HM","HND":"HN","HON":"HN","HRV":"HR","HTI":"HT","HUN":"HU","IDN":"ID","IMN":"IM","INA":"ID","IND":"IN","IOT":"IO","IRI":"IR","IRL":"IE","IRN":"IR","IRQ":"IQ","ISL":"IS","ISR":"IL","ISV":"VI","ITA":"IT","IVB":"VG","JAM":"JM","JEY":"JE","JOR":"JO","JPN":"JP","KAZ":"KZ","KEN":"KE","KGZ":"KG","KHM":"KH","KIR":"KI","KNA":"KN","KOR":"KR","KOS":"XK","KSA":"SA","KUW":"KW","KWT":"KW","LAO":"LA","LAT":"LV","LBA":"LY","LBN":"LB","LBR":"LR","LBY":"LY","LCA":"LC","LES":"LS","LIB":"LB","LIE":"LI","LKA":"LK","LSO":"LS","LTU":"LT","LUX":"LU","LVA":"LV","MAC":"MO","MAD":"MG","MAF":"MF","MAR":"MA","MAS":"MY","MAW":"MW","MCO":"MC","MDA":"MD","MDG":"MG","MDV":"MV","MEX":"MX","MGL":"MN","MHL":"MH","MKD":"MK","MLI":"ML","MLT":"MT","MMR":"MM","MNE":"ME","MNG":"MN","MNP":"MP","MON":"MC","MOZ":"MZ","MRI":"MU","MRT":"MR","MSR":"MS","MTN":"MR","MTQ":"MQ","MUS":"MU","MWI":"MW","MYA":"MM","MYS":"MY","MYT":"YT","NAM":"NA","NCA":"NI","NCL":"NC","NED":"NL","NEP":"NP","NER":"NE","NFK":"NF","NGA":"NG","NGR":"NG","NIC":"NI","NIG":"NE","NIU":"NU","NLD":"NL","NOR":"NO","NPL":"NP","NRU":"NR","NZL":"NZ","OMA":"OM","OMN":"OM","PAK":"PK","PAN":"PA","PAR":"PY","PCN":"PN","PER":"PE","PHI":"PH","PHL":"PH","PLE":"PS","PLW":"PW","PNG":"PG","POL":"PL","POR":"PT","PRI":"PR","PRK":"KP","PRT":"PT","PRY":"PY","PSE":"PS","PUR":"PR","PYF":"PF","QAT":"QA","REU":"RE","ROU":"RO","RSA":"ZA","RUS":"RU","RWA":"RW","SAM":"WS","SAU":"SA","SDN":"SD","SEN":"SN","SEY":"SC","SGP":"SG","SGS":"GS","SHN":"SH","SIN":"SG","SJM":"SJ","SKN":"KN","SLB":"SB","SLE":"SL","SLO":"SI","SLV":"SV","SMR":"SM","SOL":"SB","SOM":"SO","SPM":"PM","SRB":"RS","SRI":"LK","SSD":"SS","STP":"ST","SUD":"SD","SUI":"CH","SUR":"SR","SVK":"SK","SVN":"SI","SWE":"SE","SWZ":"SZ","SXM":"SX","SYC":"SC","SYR":"SY","TAN":"TZ","TCA":"TC","TCD":"TD","TGA":"TO","TGO":"TG","THA":"TH","TJK":"TJ","TKL":"TK","TKM":"TM","TLS":"TL","TOG":"TG","TON":"TO","TPE":"TW","TRI":"TT","TTO":"TT","TUN":"TN","TUR":"TR","TUV":"TV","TWN":"TW","TZA":"TZ","UAE":"AE","UGA":"UG","UKR":"UA","UMI":"UM","URU":"UY","URY":"UY","USA":"US","UZB":"UZ","VAN":"VU","VAT":"VA","VCT":"VC","VEN":"VE","VGB":"VG","VIE":"VN","VIN":"VC","VIR":"VI","VNM":"VN","VUT":"VU","WLF":"WF","WSM":"WS","YEM":"YE","ZAF":"ZA","ZAM":"ZM","ZIM":"ZW","ZMB":"ZM","ZWE":"ZW"};
+  const NATION_FLAGS = {
+    ENG: '\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}',
+    SCO: '\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}',
+    WAL: '\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}'
+  };
+  function flagFor(country) {
+    if (!country) return '';
+    const c = String(country).trim().toUpperCase();
+    if (NATION_FLAGS[c]) return NATION_FLAGS[c];
+    const a2 = c.length === 2 ? c : COUNTRY_A2[c];
+    if (!a2 || !/^[A-Z]{2}$/.test(a2)) return '';
+    return String.fromCodePoint(0x1F1E6 + a2.charCodeAt(0) - 65, 0x1F1E6 + a2.charCodeAt(1) - 65);
+  }
+  const rankBit = p => p.rank ? `<span class="rk-in">#${p.rank}</span>` : '';
+
+  const UI = {
+    view: 'tour',
+    roundSel: null,
+    playerSearch: '',
+    playerSort: 'overall',
+    rankMode: 'points',
+    wallAll: false,
+    lastCrown: null,
+    lastSaved: null,
+
+    esc, fmt,
+
+    toast(msg) {
+      const t = $('#toast');
+      t.textContent = msg;
+      t.classList.add('on');
+      clearTimeout(UI._toastTimer);
+      UI._toastTimer = setTimeout(() => t.classList.remove('on'), 2600);
+    },
+
+    /* ---------------- shell ---------------- */
+    refresh(state) {
+      document.querySelectorAll('nav.tabs button').forEach(b =>
+        b.classList.toggle('on', b.dataset.view === UI.view));
+      document.querySelectorAll('.view').forEach(v =>
+        v.classList.toggle('on', v.id === 'view-' + UI.view));
+      const render = {
+        tour: UI.renderTour, players: UI.renderPlayers, rankings: UI.renderRankings,
+        records: UI.renderRecords, more: UI.renderMore
+      }[UI.view];
+      render(state);
+    },
+
+    /* ---------------- TOUR ---------------- */
+    renderTour(state) {
+      const el = $('#view-tour');
+      if (state.active) { el.innerHTML = UI.activeTournamentHTML(state); return; }
+
+      let crownHTML = '';
+      if (UI.lastCrown) {
+        const c = UI.lastCrown;
+        crownHTML = `
+          <div class="crown">
+            <div class="lbl">Champion · ${esc(c.event)} ${c.edition ? 'No.' + c.edition : ''}</div>
+            <div class="who">${esc(c.name)}</div>
+            <div class="mono small muted">${esc(c.score)}</div>
+            <div class="small muted mt">+${fmt(c.pts)} ranking points ${c.rank ? '· now world No.' + c.rank : ''}</div>
+            ${c.no1 ? `<div class="tiny faint mt">World No.1: ${esc(c.no1)}</div>` : ''}
+          </div>`;
+      }
+
+      const defs = Object.values(state.defs);
+      const cards = defs.map(d => {
+        const lastWin = state.completed.slice().reverse().find(ev => ev.defId === d.id);
+        const holder = lastWin && state.players[lastWin.champ];
+        return `
+        <div class="card t-card">
+          <div class="row">
+            <div class="grow">
+              <div class="name">${esc(d.name)}</div>
+              <div class="t-meta">
+                ${surfChip(d.surface)}
+                <span class="chip">${d.drawSize} draw</span>
+                <span class="chip">Best of ${d.bestOf}</span>
+                <span class="chip" style="color:var(--gold-bright);border-color:var(--gold)">${fmt(d.points)} pts</span>
+              </div>
+              <div class="tiny faint mt">
+                ${d.editions > 0 ? `Held ${d.editions}× ${holder ? '· holder: ' + esc(holder.name) : ''}` : 'Never held'}
+              </div>
+            </div>
+          </div>
+          <div class="row mt">
+            <button class="btn primary grow" data-act="startDef" data-id="${d.id}">Start tournament</button>
+            <button class="btn sm" data-act="editDef" data-id="${d.id}">Edit</button>
+          </div>
+        </div>`;
+      }).join('');
+
+      const playerCount = Object.values(state.players).filter(p => p.active).length;
+      el.innerHTML = `
+        ${crownHTML}
+        <div class="section-label">The Tour</div>
+        ${defs.length ? cards : `
+          <div class="empty">
+            <div class="big">No tournaments yet</div>
+            Create your first event — you decide what gets played and when.
+          </div>`}
+        <button class="btn gold wide" data-act="newDef">+ New tournament</button>
+        <div class="tiny faint center mt">${playerCount} active player${playerCount === 1 ? '' : 's'} in the pool</div>`;
+    },
+
+    activeTournamentHTML(state) {
+      const inst = state.active;
+      const finished = T.isFinished(inst);
+      const cur = Math.min(T.currentRoundIdx(inst), inst.rounds.length - 1);
+      if (UI.roundSel === null || UI.roundSel >= inst.rounds.length) UI.roundSel = cur;
+      const sel = UI.roundSel;
+
+      const tagVals = Object.values(inst.tags || {});
+      const qCount = tagVals.filter(t => t === 'Q').length;
+      const wCount = tagVals.filter(t => t === 'WC').length;
+      const byeCount = inst.rounds[0].filter(m => m.a === 'BYE' || m.b === 'BYE').length;
+      const direct = inst.size - qCount - wCount - byeCount;
+
+      let crown = '';
+      if (finished) {
+        const champ = state.players[inst.rounds[inst.rounds.length - 1][0].w];
+        crown = `
+          <div class="crown">
+            <div class="lbl">Your champion</div>
+            <div class="who">${esc(champ.name)}</div>
+            <button class="btn gold mt" data-act="crown">Add to the honours board</button>
+          </div>`;
+      }
+
+      const rail = inst.roundNames.map((rn, i) => {
+        const done = inst.rounds[i].every(m => m.w !== null);
+        return `<button data-act="round" data-id="${i}" class="${i === sel ? 'on' : done ? 'done' : ''}">${rn}</button>`;
+      }).join('');
+
+      const playedInRound = inst.rounds[sel].filter(m => m.w !== null && m.s !== 'bye').length;
+      const totalInRound = inst.rounds[sel].filter(m => m.s !== 'bye').length;
+
+      const matches = inst.rounds[sel].map((m, i) => UI.matchCardHTML(state, inst, sel, i, m)).join('');
+
+      return `
+        ${crown}
+        <div class="card">
+          <div class="h-display" style="font-size:20px">${esc(inst.name)} <span class="muted" style="font-size:14px">No.${inst.edition}</span></div>
+          <div class="t-meta">
+            ${surfChip(inst.surface)}
+            <span class="chip">${inst.size} draw</span>
+            <span class="chip">Best of ${inst.bestOf}</span>
+            <span class="chip" style="color:var(--gold-bright);border-color:var(--gold)">${fmt(inst.pointsBase)} pts</span>
+          </div>
+          <div class="tiny faint mt">${direct} direct entries${qCount ? ` · ${qCount} through qualifying` : ''}${wCount ? ` · ${wCount} wildcards` : ''}${byeCount ? ` · ${byeCount} byes` : ''}</div>
+        </div>
+        <div class="rail">${rail}</div>
+        <div class="tiny faint" style="margin:-4px 2px 10px">${inst.roundNames[sel]} · ${playedInRound}/${totalInRound} played</div>
+        ${matches}
+        ${!finished ? `<button class="btn danger sm wide mt" data-act="cancelT">Cancel tournament</button>` : ''}`;
+    },
+
+    matchCardHTML(state, inst, rIdx, mIdx, m) {
+      const head = `<div class="m-head"><span>${inst.roundNames[rIdx]} · Match ${mIdx + 1}</span><span>${esc(inst.name)}</span></div>`;
+
+      if (m.s === 'bye') {
+        const p = state.players[m.w];
+        return `<div class="match"><div class="m-body">
+          <div class="m-row winner">${UI.seedCell(inst, m.w)}<span class="pname grow ellip">${flagFor(p.country)} ${esc(p.name)} ${rankBit(p)}</span><span class="tiny faint">bye — through to the next round</span></div>
+        </div></div>`;
+      }
+
+      const rowFor = (pid, other) => {
+        if (pid === null) return `<div class="m-row"><span class="seed"></span><span class="pname grow faint">Awaiting result</span></div>`;
+        const p = state.players[pid];
+        const isW = m.w !== null && m.w === pid;
+        const isL = m.w !== null && m.w !== pid;
+        let boxes = '';
+        if (m.w !== null) {
+          const sets = UI.parseScore(m.s);
+          boxes = `<span class="setbox">` + sets.map(s => {
+            const mine = isW ? s.w : s.l;
+            const sup = s.tb !== null && !isW ? `<sup>${s.tb}</sup>` : (s.tb !== null && isW ? `<sup>${s.tb + 2 > s.tbw ? s.tbw : s.tbw}</sup>` : '');
+            return `<span class="${isW && s.w > s.l ? 'w' : ''}">${mine}${s.tb !== null ? (isW ? `<sup>${s.tbw}</sup>` : `<sup>${s.tb}</sup>`) : ''}</span>`;
+          }).join('') + `</span>`;
+        }
+        return `<div class="m-row ${isW ? 'winner' : ''} ${isL ? 'loser' : ''}">
+          ${UI.seedCell(inst, pid)}
+          <span class="pname grow ellip" data-act="profile" data-id="${pid}">${flagFor(p.country)} ${esc(p.name)} ${rankBit(p)}</span>
+          ${m.w === null ? `<span class="ovr">${p.overall}</span>` : boxes}
+        </div>`;
+      };
+
+      let foot;
+      if (m.w !== null) {
+        const rec = state.matches.find(x => x.i === m.mid);
+        foot = `<div class="m-foot">
+          <span class="tiny faint">${rec ? rec.m + ' min · Elo ±' + rec.d : ''} ${rec && rec.up ? '<span class="badge-upset">Upset</span>' : ''}</span>
+          <button class="btn sm" data-act="report" data-id="${m.mid}">Match report</button>
+        </div>`;
+      } else if (m.a !== null && m.b !== null) {
+        foot = `<div class="m-foot"><span class="tiny faint">Ready</span>
+          <button class="btn primary sm" data-act="play" data-r="${rIdx}" data-i="${mIdx}">Play match</button></div>`;
+      } else {
+        foot = `<div class="m-foot"><span class="tiny faint">Waiting on earlier results</span></div>`;
+      }
+
+      return `<div class="match ${m.w === null ? 'pending' : ''}">${head}<div class="m-body">${rowFor(m.a)}${rowFor(m.b)}</div>${foot}</div>`;
+    },
+
+    seedCell(inst, pid) {
+      const seed = inst.seeds[pid];
+      const tag = inst.tags && inst.tags[pid];
+      return `<span class="seed">${seed ? seed : ''}</span>${tag ? `<span class="tag">${tag}</span>` : ''}`;
+    },
+
+    // "6-4 3-6 7-6(5)" (winner's perspective) -> [{w,l,tb}] where tb = TB loser's points
+    parseScore(s) {
+      return s.split(' ').map(part => {
+        const tbMatch = part.match(/\((\d+)\)/);
+        const nums = part.replace(/\(.*\)/, '').split('-').map(Number);
+        return { w: nums[0], l: nums[1], tb: tbMatch ? Number(tbMatch[1]) : null };
+      });
+    },
+
+    /* ---------------- PLAYERS ---------------- */
+    renderPlayers(state) {
+      const el = $('#view-players');
+      let list = Object.values(state.players);
+      const q = UI.playerSearch.trim().toLowerCase();
+      if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || (p.country || '').toLowerCase().includes(q));
+      const sorters = {
+        overall: (a, b) => b.overall - a.overall,
+        rank: (a, b) => (a.rank || 9e9) - (b.rank || 9e9),
+        elo: (a, b) => b.elo - a.elo,
+        titles: (a, b) => b.titles - a.titles || b.w - a.w,
+        name: (a, b) => a.name.localeCompare(b.name)
+      };
+      list.sort((a, b) => sorters[UI.playerSort](a, b) || a.id - b.id);
+
+      const rows = list.slice(0, 400).map(p => `
+        <div class="p-row" data-act="profile" data-id="${p.id}">
+          <span class="rk">${p.rank ? '#' + p.rank : '—'}</span>
+          <div class="grow">
+            <div class="nm ellip">${flagFor(p.country)} ${esc(p.name)} ${!p.active ? '<span class="tag">Retired</span>' : ''}</div>
+            <div class="sub mono">Elo ${p.elo} · ${p.w}–${p.l}${p.titles ? ' · ' + p.titles + ' 🏆' : ''}</div>
+          </div>
+          <span class="ovr">${p.overall}</span>
+        </div>`).join('');
+
+      el.innerHTML = `
+        <div class="toolbar">
+          <input id="p-search" type="search" placeholder="Search players…" value="${esc(UI.playerSearch)}">
+          <select id="p-sort">
+            <option value="overall" ${UI.playerSort === 'overall' ? 'selected' : ''}>Overall</option>
+            <option value="rank" ${UI.playerSort === 'rank' ? 'selected' : ''}>Ranking</option>
+            <option value="elo" ${UI.playerSort === 'elo' ? 'selected' : ''}>Elo</option>
+            <option value="titles" ${UI.playerSort === 'titles' ? 'selected' : ''}>Titles</option>
+            <option value="name" ${UI.playerSort === 'name' ? 'selected' : ''}>Name</option>
+          </select>
+        </div>
+        <div class="row" style="margin-bottom:12px">
+          <button class="btn primary grow" data-act="addPlayer">+ Add player</button>
+          <button class="btn" data-act="importPlayers">Import JSON</button>
+        </div>
+        ${list.length ? rows : `
+          <div class="empty">
+            <div class="big">The locker room is empty</div>
+            Add your first legend — every attribute out of 99, exactly how you rate them.
+          </div>`}
+        ${list.length > 400 ? `<div class="tiny faint center">Showing 400 of ${list.length} — search to narrow down</div>` : ''}
+        <div class="tiny faint center mt">${list.length} player${list.length === 1 ? '' : 's'}</div>`;
+    },
+
+    /* ---------------- RANKINGS ---------------- */
+    renderRankings(state) {
+      const el = $('#view-rankings');
+      const win = state.settings.window;
+      let rows;
+      if (UI.rankMode === 'points') {
+        rows = state.rankings.map(r => {
+          const p = state.players[r.id];
+          if (!p) return '';
+          const prev = state.prevRankPos[r.id];
+          const mv = prev === undefined ? '<span class="mv same">new</span>'
+            : prev === r.rank ? '<span class="mv same">–</span>'
+              : prev > r.rank ? `<span class="mv up">▲${prev - r.rank}</span>`
+                : `<span class="mv down">▼${r.rank - prev}</span>`;
+          return `<div class="rank-row" data-act="profile" data-id="${p.id}">
+            <span class="pos">${r.rank}</span>
+            <div class="grow">
+              <div class="nm ellip">${flagFor(p.country)} ${esc(p.name)}</div>
+              <div class="tiny faint mono">Elo ${p.elo} · peak #${p.bestRank || '–'}</div>
+            </div>
+            ${mv}
+            <span class="mono" style="color:var(--gold-bright)">${fmt(r.pts)}</span>
+          </div>`;
+        }).join('');
+      } else {
+        const byElo = Object.values(state.players).filter(p => p.w + p.l > 0)
+          .sort((a, b) => b.elo - a.elo).slice(0, 100);
+        rows = byElo.map((p, i) => `
+          <div class="rank-row" data-act="profile" data-id="${p.id}">
+            <span class="pos">${i + 1}</span>
+            <div class="grow"><div class="nm ellip">${flagFor(p.country)} ${esc(p.name)}</div>
+              <div class="tiny faint mono">peak ${p.peakElo}</div></div>
+            <span class="mono" style="color:var(--gold-bright)">${p.elo}</span>
+          </div>`).join('');
+      }
+
+      el.innerHTML = `
+        <div class="seg">
+          <button data-act="rankMode" data-id="points" class="${UI.rankMode === 'points' ? 'on' : ''}">Ranking points</button>
+          <button data-act="rankMode" data-id="elo" class="${UI.rankMode === 'elo' ? 'on' : ''}">Elo</button>
+        </div>
+        ${UI.rankMode === 'points'
+          ? `<div class="tiny faint" style="margin-bottom:8px">Points from ${win > 0 ? 'the last ' + win + ' tournaments' : 'all tournaments ever played'} — change this under More.</div>`
+          : `<div class="tiny faint" style="margin-bottom:8px">Elo rises for beating strong opponents and falls for losing to weak ones. Everyone starts at 1500.</div>`}
+        <div class="card" style="padding:4px 2px">
+          ${rows || '<div class="empty">No ranked players yet — finish a tournament first.</div>'}
+        </div>`;
+    },
+
+    /* ---------------- RECORDS ---------------- */
+    renderRecords(state) {
+      const el = $('#view-records');
+      const L = R.leaders(state);
+      const majors = R.bigTitles(state, 1500);
+
+      const leadCard = (title, arr, valueFn, subFn) => {
+        if (!arr || arr.length === 0) return '';
+        return `<div class="card lead"><div class="t">${title}</div><ol>` +
+          arr.slice(0, 5).map((p, i) => `
+            <li data-act="profile" data-id="${p.player ? p.player.id : p.id}">
+              <span class="n">${i + 1}</span>
+              <span class="ellip">${esc((p.player || p).name)}</span>
+              <span class="v">${valueFn(p)}</span>
+            </li>`).join('') + `</ol></div>`;
+      };
+
+      const honours = R.titlesByTournament(state).map(({ def, holders }) => `
+        <div class="card lead"><div class="t">${esc(def.name)}</div><ol>
+          ${holders.map((h, i) => `<li data-act="profile" data-id="${h.player.id}"><span class="n">${i + 1}</span><span class="ellip">${esc(h.player.name)}</span><span class="v">${h.count}</span></li>`).join('')}
+        </ol></div>`).join('');
+
+      const wall = R.championsWall(state);
+      const wallRows = (UI.wallAll ? wall : wall.slice(0, 25)).map(ev => {
+        const c = state.players[ev.champ], ru = state.players[ev.runnerUp];
+        return `<div class="wall-row">
+          <span class="ed">${esc(ev.name).slice(0, 14)} №${ev.n}</span>
+          <span class="ch grow ellip" data-act="profile" data-id="${ev.champ}">${c ? flagFor(c.country) + ' ' + esc(c.name) : '?'}</span>
+          <span class="tiny faint mono">d. ${ru ? esc(ru.name.split(' ').slice(-1)[0]) : '?'} ${esc(ev.finalScore)}</span>
+        </div>`;
+      }).join('');
+
+      const playerOpts = Object.values(state.players)
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+
+      el.innerHTML = `
+        <div class="section-label">All-time leaders</div>
+        <div class="lead-grid">
+          ${leadCard('Most titles', L.titles, p => p.titles)}
+          ${leadCard('Major titles (1500+ pt events)', majors, r => r.count)}
+          ${leadCard('Most finals', L.finals, p => p.finals)}
+          ${leadCard('Match wins', L.wins, p => p.w)}
+          ${leadCard('Win percentage (min 20)', L.winPct, p => pct1(p.w, p.l))}
+          ${leadCard('Peak Elo', L.peakElo, p => p.peakElo)}
+          ${leadCard('Longest win streak', L.bestStreak, p => p.bestStreak)}
+          ${leadCard('Finished world No.1', L.no1, p => p.no1 + '×')}
+          ${leadCard('Wins over the top 10', L.vsTop10, p => p.vsTop10[0])}
+        </div>
+        ${honours ? `<div class="section-label">Honours by event</div><div class="lead-grid">${honours}</div>` : ''}
+        <div class="section-label">Head to head</div>
+        <div class="card">
+          <div class="form-grid">
+            <select id="h2h-a"><option value="">Player one…</option>${playerOpts}</select>
+            <select id="h2h-b"><option value="">Player two…</option>${playerOpts}</select>
+          </div>
+          <button class="btn wide mt" data-act="h2h">Compare</button>
+          <div id="h2h-out"></div>
+        </div>
+        <div class="section-label">Champions wall</div>
+        ${wall.length ? `<div class="wall">${wallRows}
+          ${wall.length > 25 && !UI.wallAll ? `<button class="btn sm wide mt" data-act="wallAll">Show all ${wall.length}</button>` : ''}
+        </div>` : '<div class="empty">No champions yet. The wall awaits its first name.</div>'}`;
+    },
+
+    h2hResultHTML(state, aId, bId) {
+      const a = state.players[aId], b = state.players[bId];
+      const { rec, matches } = R.h2hDetail(state, aId, bId);
+      const meetings = matches.slice(0, 10).map(m => {
+        const wn = state.players[m.w];
+        return `<div class="statline"><span class="ellip">${esc(wn ? wn.name : '?')} · ${esc(m.rn)} <span class="faint">${esc(m.sf)}</span></span><span class="v small">${esc(m.s)}</span></div>`;
+      }).join('');
+      return `
+        <div class="hero-grid mt">
+          <div class="cell"><div class="hero-num">${rec.aWins}</div><div class="k ellip">${esc(a.name.split(' ').slice(-1)[0])}</div></div>
+          <div class="cell"><div class="hero-num" style="color:var(--muted)">v</div><div class="k">${rec.aWins + rec.bWins} met</div></div>
+          <div class="cell"><div class="hero-num">${rec.bWins}</div><div class="k ellip">${esc(b.name.split(' ').slice(-1)[0])}</div></div>
+        </div>
+        ${meetings || '<div class="tiny faint center">They have never met.</div>'}`;
+    },
+
+    /* ---------------- MORE ---------------- */
+    renderMore(state) {
+      const el = $('#view-more');
+      const kb = (D.storageBytes(state) / 1024).toFixed(0);
+      el.innerHTML = `
+        <div class="section-label">Your save</div>
+        <div class="card">
+          <div class="statline"><span>Players</span><span class="v">${Object.keys(state.players).length}</span></div>
+          <div class="statline"><span>Matches on record</span><span class="v">${fmt(state.matches.length)}</span></div>
+          <div class="statline"><span>Tournaments completed</span><span class="v">${state.completed.length}</span></div>
+          <div class="statline"><span>Save size</span><span class="v">${kb} KB</span></div>
+          ${UI.lastSaved ? `<div class="tiny faint mt">Autosaved ${UI.lastSaved}</div>` : ''}
+        </div>
+        <div class="card">
+          <div class="small" style="margin-bottom:8px">Everything lives in this browser. Export a backup regularly — if the browser ever clears its storage, the backup file is your simulation.</div>
+          <div class="row">
+            <button class="btn gold grow" data-act="export">Export backup</button>
+            <button class="btn grow" data-act="importSave">Import backup</button>
+          </div>
+          <input type="file" id="import-file" accept=".json,application/json" style="display:none">
+        </div>
+        <div class="section-label">Rankings</div>
+        <div class="card">
+          <label class="f" for="win-input">Ranking window — how many recent tournaments count</label>
+          <div class="row">
+            <input id="win-input" type="number" min="0" max="200" value="${state.settings.window}">
+            <button class="btn" data-act="saveWindow">Save</button>
+          </div>
+          <div class="tiny faint mt">Like the real tour's rolling 12 months, but measured in tournaments. Set 0 to count everything ever played.</div>
+        </div>
+        <div class="section-label">Danger zone</div>
+        <div class="card">
+          <button class="btn danger wide" data-act="reset">Erase everything and start again</button>
+        </div>
+        <div class="tiny faint center mt">Tennis Legends · the eternal tour · no ageing, no seasons, just the game</div>`;
+    },
+
+    /* ---------------- SHEETS (modals) ---------------- */
+    openSheet(html) {
+      $('#sheet').innerHTML = `<div class="grab"></div><button class="sheet-close" data-act="closeSheet">✕</button>` + html;
+      $('#overlay').classList.add('on');
+      $('#sheet').scrollTop = 0;
+    },
+    closeSheet() { $('#overlay').classList.remove('on'); $('#sheet').innerHTML = ''; },
+
+    sheetPlayerEditor(state, id) {
+      const p = id ? state.players[id] : null;
+      const attrVal = key => (p ? p.attrs[key] : '');
+      const groups = Object.entries(E.ATTR_GROUPS).map(([gname, keys], gi) => `
+        <details class="grp" ${gi === 0 ? 'open' : ''}>
+          <summary>${gname}</summary>
+          <div class="inner attr-grid">
+            ${keys.map(k => {
+              const label = E.ATTR_DEFS.find(d => d[0] === k)[1];
+              return `<div class="a"><label for="attr-${k}">${label}</label>
+                <input id="attr-${k}" data-attr="${k}" type="number" min="1" max="99" inputmode="numeric" value="${attrVal(k)}"></div>`;
+            }).join('')}
+          </div>
+        </details>`).join('');
+
+      UI.openSheet(`
+        <h2>${p ? 'Edit ' + esc(p.name) : 'New player'}</h2>
+        <div class="tiny faint" style="margin-bottom:12px">Empty attribute boxes take the Overall value when you save.</div>
+        <div class="form-grid">
+          <div class="full"><label class="f" for="pe-name">Name</label><input id="pe-name" value="${p ? esc(p.name) : ''}" placeholder="Prime Novak Djokovic"></div>
+          <div><label class="f" for="pe-country">Country (optional)</label><input id="pe-country" maxlength="3" value="${p ? esc(p.country) : ''}" placeholder="SRB"></div>
+          <div><label class="f" for="pe-overall">Overall / 99</label><input id="pe-overall" type="number" min="1" max="99" inputmode="numeric" value="${p ? p.overall : ''}"></div>
+          <div><label class="f" for="pe-hard">Hard court</label><input id="pe-hard" type="number" min="1" max="99" inputmode="numeric" value="${p ? p.surfaces.hard : 80}"></div>
+          <div><label class="f" for="pe-clay">Clay court</label><input id="pe-clay" type="number" min="1" max="99" inputmode="numeric" value="${p ? p.surfaces.clay : 80}"></div>
+          <div><label class="f" for="pe-grass">Grass court</label><input id="pe-grass" type="number" min="1" max="99" inputmode="numeric" value="${p ? p.surfaces.grass : 80}"></div>
+        </div>
+        <button class="btn sm mt" data-act="fillAttrs">Fill empty boxes from Overall</button>
+        <div class="mt">${groups}</div>
+        <button class="btn primary wide mt" data-act="${p ? 'saveEditPlayer' : 'saveNewPlayer'}" data-id="${p ? p.id : ''}">Save player</button>`);
+    },
+
+    sheetImportPlayers() {
+      UI.openSheet(`
+        <h2>Import players</h2>
+        <div class="small muted" style="margin:6px 0 10px">Paste one player or an array. Any attribute you leave out takes the Overall value; surfaces default to 80.</div>
+        <textarea id="imp-text" rows="9" placeholder='[{"name":"Prime Pete Sampras","country":"USA","overall":96,"surfaces":{"grass":98,"hard":95,"clay":78},"attrs":{"serve":99,"volley":97,"returnServe":88}}]'></textarea>
+        <button class="btn primary wide mt" data-act="doImportPlayers">Import</button>`);
+    },
+
+    sheetProfile(state, id) {
+      const c = R.career(state, id);
+      if (!c) return;
+      const p = c.player;
+
+      const honoursList = c.titlesList.slice(0, 30).map(ev =>
+        `<div class="statline"><span>${esc(ev.name)} №${ev.n}</span><span class="v small">d. ${esc((state.players[ev.runnerUp] || { name: '?' }).name.split(' ').slice(-1)[0])} ${esc(ev.finalScore)}</span></div>`).join('');
+
+      const recent = c.matches.slice(0, 12).map(m => {
+        const won = m.w === p.id;
+        const oppId = m.a === p.id ? m.b : m.a;
+        const opp = state.players[oppId];
+        return `<div class="statline">
+          <span class="ellip">${won ? '<span style="color:var(--win)">W</span>' : '<span style="color:var(--danger)">L</span>'} v ${esc(opp ? opp.name : '?')} <span class="faint tiny">${esc(m.rn)}</span></span>
+          <span class="v small">${esc(m.s)}</span></div>`;
+      }).join('');
+
+      const bars = Object.entries(E.ATTR_GROUPS).map(([gname, keys]) => `
+        <details class="grp"><summary>${gname}</summary><div class="inner">
+          ${keys.map(k => {
+            const label = E.ATTR_DEFS.find(d => d[0] === k)[1];
+            const v = p.attrs[k];
+            return `<div class="bar"><span class="lb">${label}</span><span class="tr"><span class="fl" style="width:${v}%"></span></span><span class="vl">${v}</span></div>`;
+          }).join('')}
+        </div></details>`).join('');
+
+      UI.openSheet(`
+        <div class="row">
+          <div class="grow">
+            <h2>${esc(p.name)}</h2>
+            <div class="tiny faint">${flagFor(p.country)} ${esc(p.country || '')} ${!p.active ? '· Retired from the pool' : ''}</div>
+          </div>
+          <span class="ovr" style="font-size:17px;padding:6px 8px">${p.overall}</span>
+        </div>
+        <div class="hero-grid">
+          <div class="cell"><div class="hero-num">${p.rank ? '#' + p.rank : '—'}</div><div class="k">Rank · peak ${p.bestRank ? '#' + p.bestRank : '—'}</div></div>
+          <div class="cell"><div class="hero-num">${p.titles}</div><div class="k">Titles · ${p.finals} finals</div></div>
+          <div class="cell"><div class="hero-num">${p.elo}</div><div class="k">Elo · peak ${p.peakElo}</div></div>
+        </div>
+        <div class="card">
+          <div class="statline"><span>Record</span><span class="v">${p.w}–${p.l} (${pct1(p.w, p.l)})</span></div>
+          <div class="statline"><span>Hard · Clay · Grass</span><span class="v">${p.surf.hard[0]}–${p.surf.hard[1]} · ${p.surf.clay[0]}–${p.surf.clay[1]} · ${p.surf.grass[0]}–${p.surf.grass[1]}</span></div>
+          <div class="statline"><span>Deciding sets</span><span class="v">${p.dec[0]}–${p.dec[1]}</span></div>
+          <div class="statline"><span>Tie-break sets</span><span class="v">${p.tb[0]}–${p.tb[1]}</span></div>
+          <div class="statline"><span>Wins v top 10</span><span class="v">${p.vsTop10[0]}–${p.vsTop10[1]}</span></div>
+          <div class="statline"><span>Win streak</span><span class="v">${p.streak} now · ${p.bestStreak} best</span></div>
+          <div class="statline"><span>Finished world No.1</span><span class="v">${p.no1}×</span></div>
+        </div>
+        <div class="row">
+          <span class="chip"><span class="dot hard"></span>${p.surfaces.hard}</span>
+          <span class="chip"><span class="dot clay"></span>${p.surfaces.clay}</span>
+          <span class="chip"><span class="dot grass"></span>${p.surfaces.grass}</span>
+        </div>
+        ${honoursList ? `<div class="section-label">Honours</div>${honoursList}` : ''}
+        ${recent ? `<div class="section-label">Recent matches <span class="faint" style="letter-spacing:0;text-transform:none">(${fmt(c.totalMatches)} total)</span></div>${recent}` : ''}
+        <div class="section-label">Attributes</div>
+        ${bars}
+        <div class="row mt">
+          <button class="btn grow" data-act="editPlayer" data-id="${p.id}">Edit</button>
+          <button class="btn grow" data-act="toggleRetire" data-id="${p.id}">${p.active ? 'Retire' : 'Reinstate'}</button>
+          <button class="btn danger" data-act="deletePlayer" data-id="${p.id}">Delete</button>
+        </div>`);
+    },
+
+    sheetTournamentEditor(state, id) {
+      const d = id ? state.defs[id] : null;
+      const slots = d ? { quali: d.quali, wild: d.wild } : T.defaultSlots(128);
+      UI.openSheet(`
+        <h2>${d ? 'Edit ' + esc(d.name) : 'New tournament'}</h2>
+        <div class="form-grid mt">
+          <div class="full"><label class="f" for="te-name">Name</label><input id="te-name" value="${d ? esc(d.name) : ''}" placeholder="Wimbledon"></div>
+          <div><label class="f" for="te-surface">Surface</label>
+            <select id="te-surface">
+              ${E.SURFACES.map(s => `<option value="${s}" ${d && d.surface === s ? 'selected' : ''}>${SURF_NAME[s]}</option>`).join('')}
+            </select></div>
+          <div><label class="f" for="te-draw">Draw size</label>
+            <select id="te-draw">${[128, 64, 32, 16, 8, 4].map(n => `<option ${d ? (d.drawSize === n ? 'selected' : '') : (n === 128 ? 'selected' : '')}>${n}</option>`).join('')}</select></div>
+          <div><label class="f" for="te-bestof">Format</label>
+            <select id="te-bestof"><option value="3" ${d && d.bestOf === 3 ? 'selected' : ''}>Best of 3</option><option value="5" ${!d || d.bestOf === 5 ? 'selected' : ''}>Best of 5</option></select></div>
+          <div><label class="f" for="te-points">Champion's points</label><input id="te-points" type="number" min="50" max="4000" inputmode="numeric" value="${d ? d.points : 2000}"></div>
+          <div><label class="f" for="te-quali">Qualifier spots</label><input id="te-quali" type="number" min="0" max="32" inputmode="numeric" value="${slots.quali}"></div>
+          <div><label class="f" for="te-wild">Wildcard spots</label><input id="te-wild" type="number" min="0" max="32" inputmode="numeric" value="${slots.wild}"></div>
+        </div>
+        <div class="row mt">
+          ${[2000, 1000, 500, 250].map(v => `<button class="btn sm grow" data-act="ptsPreset" data-id="${v}">${v}</button>`).join('')}
+        </div>
+        <div class="tiny faint mt">Points set an event's prestige: every round pays a share of the champion's total (final 60%, semis 36%, quarters 18%…), and bigger events swing Elo harder. The rest of the field fights through simulated qualifying; wildcards are drawn at random, weighted towards better players.</div>
+        <button class="btn primary wide mt" data-act="${d ? 'saveEditDef' : 'saveNewDef'}" data-id="${d ? d.id : ''}">Save tournament</button>
+        ${d ? `<button class="btn danger sm wide mt" data-act="deleteDef" data-id="${d.id}">Delete tournament</button>` : ''}`);
+    },
+
+    sheetMatchReport(state, mid) {
+      const m = state.matches.find(x => x.i === Number(mid));
+      if (!m) return;
+      const a = state.players[m.a], b = state.players[m.b];
+      const winnerIsA = m.w === m.a;
+      const sets = UI.parseScore(m.s);
+      const rowBoxes = isA => `<span class="setbox">` + sets.map(s => {
+        const mine = (isA === winnerIsA) ? s.w : s.l;
+        const won = (isA === winnerIsA) ? s.w > s.l : s.l > s.w;
+        const sup = s.tb === null ? '' : `<sup>${(isA === winnerIsA) ? s.tbw : s.tb}</sup>`;
+        return `<span class="${won ? 'w' : ''}">${mine}${sup}</span>`;
+      }).join('') + `</span>`;
+      const st = m.st || [0, 0, 0, 0, 0, 0];
+      const injNote = (m.inj || []).map(x => {
+        const [pid, setNo] = x.split(':');
+        const pl = state.players[Number(pid)];
+        return `${pl ? esc(pl.name) : '?'} picked up a knock after set ${setNo}`;
+      }).join(' · ');
+
+      UI.openSheet(`
+        <h2>Match report</h2>
+        <div class="tiny faint">${esc(m.rn)} · ${SURF_NAME[m.sf] || esc(m.sf)} · ${m.m} minutes</div>
+        <div class="match mt"><div class="m-body">
+          <div class="m-row ${winnerIsA ? 'winner' : 'loser'}"><span class="pname grow ellip">${esc(a ? a.name : '?')}</span>${rowBoxes(true)}</div>
+          <div class="m-row ${!winnerIsA ? 'winner' : 'loser'}"><span class="pname grow ellip">${esc(b ? b.name : '?')}</span>${rowBoxes(false)}</div>
+        </div></div>
+        <div class="card">
+          <div class="statline"><span>Points won</span><span class="v">${st[4]} – ${st[5]}</span></div>
+          <div class="statline"><span>Aces</span><span class="v">${st[0]} – ${st[1]}</span></div>
+          <div class="statline"><span>Breaks of serve</span><span class="v">${st[2]} – ${st[3]}</span></div>
+          <div class="statline"><span>Elo exchanged</span><span class="v">±${m.d}</span></div>
+          ${m.up ? `<div class="statline"><span>Verdict</span><span class="v" style="color:var(--danger)">Upset</span></div>` : ''}
+        </div>
+        ${injNote ? `<div class="tiny muted">${injNote}</div>` : ''}`);
+    }
+  };
+
+  global.TennisUI = UI;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* ============================================================
+   TENNIS LEGENDS — App controller
+   Boot, autosave, delegated events.
+   ============================================================ */
+(function () {
+  'use strict';
+  const E = window.TennisEngine;
+  const D = window.TennisData;
+  const T = window.TennisTournament;
+  const UI = window.TennisUI;
+
+  let state;
+  try { state = D.load(); }
+  catch (e) { state = D.newState(); }
+
+  function save() {
+    try {
+      D.save(state);
+      UI.lastSaved = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    } catch (e) {
+      UI.toast('Could not save — storage may be full. Export a backup now.');
+    }
+  }
+
+  const num = (id, fallback) => {
+    const v = document.getElementById(id) ? document.getElementById(id).value : '';
+    return v === '' ? fallback : Number(v);
+  };
+  const txt = id => (document.getElementById(id) ? document.getElementById(id).value : '');
+
+  function readPlayerForm() {
+    const attrs = {};
+    document.querySelectorAll('[data-attr]').forEach(inp => {
+      if (inp.value !== '') attrs[inp.dataset.attr] = Number(inp.value);
+    });
+    return {
+      name: txt('pe-name').trim(),
+      country: txt('pe-country').trim().toUpperCase(),
+      overall: num('pe-overall', 75),
+      surfaces: { hard: num('pe-hard', 80), clay: num('pe-clay', 80), grass: num('pe-grass', 80) },
+      attrs
+    };
+  }
+
+  function readDefForm() {
+    return {
+      name: txt('te-name').trim(),
+      surface: txt('te-surface'),
+      drawSize: num('te-draw', 128),
+      bestOf: num('te-bestof', 5),
+      points: num('te-points', 2000),
+      quali: num('te-quali', undefined),
+      wild: num('te-wild', undefined)
+    };
+  }
+
+  /* ---------------- actions ---------------- */
+  const actions = {
+    /* tour */
+    newDef() { UI.sheetTournamentEditor(state, null); },
+    editDef(id) { UI.sheetTournamentEditor(state, Number(id)); },
+    saveNewDef() {
+      const input = readDefForm();
+      if (!input.name) return UI.toast('Give the tournament a name');
+      T.createDef(state, input);
+      UI.closeSheet(); save(); UI.refresh(state);
+      UI.toast('Tournament created');
+    },
+    saveEditDef(id) {
+      const input = readDefForm();
+      if (!input.name) return UI.toast('Give the tournament a name');
+      T.updateDef(state, Number(id), input);
+      UI.closeSheet(); save(); UI.refresh(state);
+    },
+    deleteDef(id) {
+      if (!confirm('Delete this tournament? Its past champions stay on the records.')) return;
+      try { T.deleteDef(state, Number(id)); } catch (e) { return UI.toast(e.message); }
+      UI.closeSheet(); save(); UI.refresh(state);
+    },
+    ptsPreset(v) {
+      const inp = document.getElementById('te-points');
+      if (inp) inp.value = v;
+    },
+    startDef(id) {
+      try {
+        T.startTournament(state, Number(id));
+        UI.roundSel = null;
+        UI.lastCrown = null;
+        save(); UI.refresh(state);
+      } catch (e) { UI.toast(e.message); }
+    },
+    round(i) { UI.roundSel = Number(i); UI.refresh(state); },
+    play(_, el) {
+      const r = Number(el.dataset.r), i = Number(el.dataset.i);
+      try {
+        const res = T.playMatch(state, r, i);
+        save(); UI.refresh(state);
+        if (res.finished) UI.toast('We have a champion 🏆');
+      } catch (e) { UI.toast(e.message); }
+    },
+    report(id) { UI.sheetMatchReport(state, id); },
+    crown() {
+      try {
+        const inst = state.active;
+        const fin = T.finalizeTournament(state);
+        UI.lastCrown = {
+          name: fin.champ.name, event: inst.name, edition: inst.edition,
+          score: fin.finalScore, pts: inst.pointsBase,
+          rank: fin.champ.rank,
+          no1: state.rankings.length ? state.players[state.rankings[0].id].name : null
+        };
+        UI.roundSel = null;
+        save(); UI.refresh(state);
+      } catch (e) { UI.toast(e.message); }
+    },
+    cancelT() {
+      if (!confirm('Cancel this tournament? No champion will be crowned, but matches already played stay on every record.')) return;
+      T.cancelTournament(state);
+      UI.roundSel = null;
+      save(); UI.refresh(state);
+    },
+
+    /* players */
+    addPlayer() { UI.sheetPlayerEditor(state, null); },
+    editPlayer(id) { UI.sheetPlayerEditor(state, Number(id)); },
+    saveNewPlayer() {
+      const input = readPlayerForm();
+      if (!input.name) return UI.toast('The player needs a name');
+      const p = D.addPlayer(state, input);
+      UI.closeSheet(); save(); UI.refresh(state);
+      UI.toast(p.name + ' joins the tour');
+    },
+    saveEditPlayer(id) {
+      const input = readPlayerForm();
+      if (!input.name) return UI.toast('The player needs a name');
+      D.updatePlayer(state, Number(id), input);
+      UI.closeSheet(); save(); UI.refresh(state);
+    },
+    fillAttrs() {
+      const ovr = num('pe-overall', 75);
+      document.querySelectorAll('[data-attr]').forEach(inp => { if (inp.value === '') inp.value = ovr; });
+    },
+    importPlayers() { UI.sheetImportPlayers(); },
+    doImportPlayers() {
+      try {
+        const added = D.importPlayers(state, txt('imp-text'));
+        UI.closeSheet(); save(); UI.refresh(state);
+        UI.toast(added.length + ' player' + (added.length === 1 ? '' : 's') + ' imported');
+      } catch (e) { UI.toast('Import failed: ' + e.message); }
+    },
+    profile(id) { UI.sheetProfile(state, Number(id)); },
+    toggleRetire(id) {
+      const p = state.players[Number(id)];
+      if (!p) return;
+      p.active = !p.active;
+      save(); UI.sheetProfile(state, p.id); UI.refresh(state);
+      UI.toast(p.active ? p.name + ' is back on tour' : p.name + ' has retired');
+    },
+    deletePlayer(id) {
+      const p = state.players[Number(id)];
+      if (!p) return;
+      if (D.playerHasHistory(state, p.id)) {
+        return UI.toast('Players with match history can\'t be deleted — retire them instead');
+      }
+      if (!confirm('Delete ' + p.name + ' for good?')) return;
+      D.deletePlayer(state, p.id);
+      UI.closeSheet(); save(); UI.refresh(state);
+    },
+
+    /* rankings + records */
+    rankMode(m) { UI.rankMode = m; UI.refresh(state); },
+    wallAll() { UI.wallAll = true; UI.refresh(state); },
+    h2h() {
+      const a = Number(txt('h2h-a')), b = Number(txt('h2h-b'));
+      const out = document.getElementById('h2h-out');
+      if (!a || !b) return UI.toast('Pick two players');
+      if (a === b) return UI.toast('Pick two different players');
+      out.innerHTML = UI.h2hResultHTML(state, a, b);
+    },
+
+    /* more */
+    export() {
+      const blob = new Blob([D.exportJSON(state)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      const d = new Date();
+      a.download = 'tennis-legends-backup-' + d.toISOString().slice(0, 10) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+      UI.toast('Backup exported — keep it somewhere safe');
+    },
+    importSave() { document.getElementById('import-file').click(); },
+    saveWindow() {
+      const w = Math.max(0, Math.min(200, num('win-input', 20)));
+      state.settings.window = w;
+      T.recomputeRankings(state);
+      save(); UI.refresh(state);
+      UI.toast(w === 0 ? 'Rankings now count everything ever played' : 'Rankings now count the last ' + w + ' tournaments');
+    },
+    reset() {
+      if (!confirm('Erase EVERYTHING — every player, match and champion?')) return;
+      if (!confirm('Last chance. This cannot be undone unless you have a backup.')) return;
+      state = D.newState();
+      save(); UI.roundSel = null; UI.lastCrown = null; UI.refresh(state);
+      UI.toast('A blank page. Build a new era.');
+    },
+
+    closeSheet() { UI.closeSheet(); }
+  };
+
+  /* ---------------- wiring ---------------- */
+  document.addEventListener('click', e => {
+    const nav = e.target.closest('nav.tabs [data-view]');
+    if (nav) { UI.view = nav.dataset.view; UI.refresh(state); return; }
+    const el = e.target.closest('[data-act]');
+    if (!el) return;
+    const fn = actions[el.dataset.act];
+    if (fn) fn(el.dataset.id, el);
+  });
+
+  document.addEventListener('input', e => {
+    if (e.target.id === 'p-search') {
+      UI.playerSearch = e.target.value;
+      const pos = e.target.selectionStart;
+      UI.renderPlayers(state);
+      const inp = document.getElementById('p-search');
+      inp.focus();
+      try { inp.setSelectionRange(pos, pos); } catch (_) { /* number/search quirks */ }
+    }
+  });
+
+  document.addEventListener('change', e => {
+    if (e.target.id === 'p-sort') { UI.playerSort = e.target.value; UI.refresh(state); }
+    if (e.target.id === 'te-draw') {
+      const s = T.defaultSlots(Number(e.target.value));
+      const q = document.getElementById('te-quali'), w = document.getElementById('te-wild');
+      if (q) q.value = s.quali;
+      if (w) w.value = s.wild;
+    }
+    if (e.target.id === 'import-file') {
+      const file = e.target.files[0];
+      e.target.value = '';
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const incoming = D.importJSON(reader.result);
+          if (!confirm('Replace your current world with this backup? Your current save will be overwritten.')) return;
+          state = incoming;
+          save(); UI.roundSel = null; UI.lastCrown = null; UI.refresh(state);
+          UI.toast('Backup restored');
+        } catch (err) { UI.toast('That doesn\'t look like a Tennis Legends save'); }
+      };
+      reader.readAsText(file);
+    }
+  });
+
+  document.getElementById('overlay').addEventListener('click', e => {
+    if (e.target.id === 'overlay') UI.closeSheet();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') UI.closeSheet(); });
+
+  /* boot */
+  UI.refresh(state);
+})();
+
+</script>
+</body>
+</html>
